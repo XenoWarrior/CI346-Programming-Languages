@@ -11,8 +11,8 @@ public class FrontEnd {
 		SpringApplication.run(FrontEnd.class, args);
 	}
 
-	@RequestMapping("/")
-	public String Index() {
-		return "Hello World - Index Page";
+	@RequestMapping(value = "/")
+	public String index() {
+		return "index.html"; 
 	}
 }

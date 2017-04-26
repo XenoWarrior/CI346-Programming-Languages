@@ -5,14 +5,14 @@ module.exports = {
     devtool: 'sourcemaps',
     output: {
         path: __dirname,
-        filename: './src/main/resources/js/main.js'
+        filename: './src/main/webapp/js/bundle.js'
     },
     module: {
         loaders: [
             {
                 test: path.join(__dirname, '.'),
                 exclude: /(node_modules)/,
-                loader: 'babel',
+                loader: 'babel-loader',
                 query: {
                     cacheDirectory: true,
                     presets: ['es2015', 'react']

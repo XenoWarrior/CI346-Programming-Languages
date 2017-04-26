@@ -6,14 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class BackEnd {
 	
-	@RequestMapping("/")
-	public String Index() {
-		return "index";
-	}
-	
 	@RequestMapping("/api")
 	public String IndexAPI() {
-		return "{}";
+		return "{\"error\": 0, \"message\": \"Welcome to the server.\"}";
 	}
 	
 }
