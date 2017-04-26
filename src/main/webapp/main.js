@@ -7,7 +7,7 @@ class App extends React.Component {
 	}
 }
 
-ReactDOM.render(
+render(
 	<App />,
 	document.getElementById('target')
 );

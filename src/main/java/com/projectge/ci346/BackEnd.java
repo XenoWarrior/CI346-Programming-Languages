@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class BackEnd {
 	
 	@RequestMapping("/")
-	public String Index(){
-		return "Index";
+	public String Index() {
+		return "index";
 	}
 	
 	@RequestMapping("/api")
