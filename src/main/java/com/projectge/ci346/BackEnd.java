@@ -43,38 +43,81 @@ public class BackEnd {
 					
 					finalResults.put(String.valueOf(finalResults.size()), gson.toJson(items));
 				}
-				
-				return gson.toJson(finalResults);
 			}
 			else {
-				finalResults.put("error", "No results found.");
-				
-				return gson.toJson(finalResults);
+				finalResults.put("error", "No employees found.");
 			}
 		}
 		catch(Exception e) {
 			finalResults.put("error", "Exception Caught: " + e.getLocalizedMessage());
-			
-			return gson.toJson(finalResults);
 		}
+		
+		return gson.toJson(finalResults);
+	}
+
+	@RequestMapping(value = "/api/employee/{id}", method = RequestMethod.DELETE, produces = "plain/text")
+	public String DelEmployee(@PathVariable("id") int id) {
+		HashMap<String, String> finalResults = new HashMap<String, String>();
+		
+		try {
+			DatabaseManager db = new DatabaseManager();
+			boolean dbResults = db.delEmployee(id);
+
+			if(!dbResults) {
+				finalResults.put("message", "Actions completed successfully.");
+			}
+			else {
+				finalResults.put("error", "No employee id [" + id + "] found.");
+			}
+		}
+		catch(Exception e) {
+			finalResults.put("error", "Exception Caught: " + e.getLocalizedMessage());
+		}
+
+		return gson.toJson(finalResults);
+	}
+
+	@RequestMapping(value = "/api/debug/undeleteall", method = RequestMethod.GET, produces = "plain/text")
+	public String debugUndeleteAll() {
+		HashMap<String, String> finalResults = new HashMap<String, String>();
+		
+		try {
+			DatabaseManager db = new DatabaseManager();
+			boolean dbResults = db.undelAll();
+
+			if(!dbResults) {
+				finalResults.put("message", "Actions completed successfully.");
+			}
+			else {
+				finalResults.put("error", "Unable to run this action.");
+			}
+		}
+		catch(Exception e) {
+			finalResults.put("error", "Exception Caught: " + e.getLocalizedMessage());
+		}
+
+		return gson.toJson(finalResults);
 	}
 	
-	@RequestMapping(value = "/api/employee/{id}", method = RequestMethod.GET, produces = "plain/text")
-	public String GetEmployee(@PathVariable("id") int id) {
-		DatabaseManager db = new DatabaseManager();
+	@RequestMapping(value = "/api/debug/deleteall", method = RequestMethod.DELETE, produces = "plain/text")
+	public String debugDeleteAll() {
+		HashMap<String, String> finalResults = new HashMap<String, String>();
 		
-		ArrayList<EmployeeData> dbResults = db.getEmployee(id);
-        Map<String, String> finalResults = new HashMap<String, String>();
+		try {
+			DatabaseManager db = new DatabaseManager();
+			boolean dbResults = db.delAll();
 
-		if(dbResults != null) {
-			finalResults.put("error", "No results found.");
-			
-			return gson.toJson(finalResults);
+			if(!dbResults) {
+				finalResults.put("message", "Actions completed successfully.");
+			}
+			else {
+				finalResults.put("error", "Unable to run this action.");
+			}
 		}
-		else {
-			finalResults.put("message", "No results found.");
-			
-			return gson.toJson(finalResults);
+		catch(Exception e) {
+			finalResults.put("error", "Exception Caught: " + e.getLocalizedMessage());
 		}
+
+		return gson.toJson(finalResults);
 	}
 }

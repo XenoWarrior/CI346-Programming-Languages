@@ -8,7 +8,7 @@
 		<script type="text/javascript" src="./js/materialize-init.js"></script>
 
 		<link rel="stylesheet" href="./materialize/css/materialize.min.css">
-
+		<link rel="stylesheet" href="./css/custom.css">
 	</head>
 	<body>
 		<nav>
@@ -16,9 +16,7 @@
 				<a href="#" class="brand-logo">Employee List</a>
 				<ul id="nav-mobile" class="right hide-on-med-and-down">
 					<li><a href="./">Home</a></li>
-					<li><a href="./api">API</a></li>
-					<li><a href="./debug">Debug</a></li>
-				</ul>
+ 				</ul>
 			</div>
 		</nav>
 		<div class="container">
@@ -33,8 +31,15 @@
 					</div>
 				</div>
 			</div>
-			<div class="row col s12" id="target"></div>		
+
+			<h3>Employee List</h3>
+			<div class="row col s12" id="employee-target"></div>
+
+			<h3>Debug Tools</h3>
+			<div class="row col s12" id="debug-target"></div>		
+
+			<script type="text/javascript" src="./js/bundle.js"></script>
 		</div>
-		<script type="text/javascript" src="./js/bundle.js"></script>
+
 	</body>
 </html>

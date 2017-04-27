@@ -46,7 +46,7 @@ public class DatabaseManager {
 		try {  
 			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
 			Statement dbStatement = databaseConnection.createStatement();  
-			ResultSet dbResults = dbStatement.executeQuery("SELECT * FROM employee_data WHERE 1");
+			ResultSet dbResults = dbStatement.executeQuery("SELECT * FROM employee_data WHERE em_deleted = 0");
 			
 			ArrayList<EmployeeData> finalResults = new ArrayList<EmployeeData>();
 			while(dbResults.next()) {
@@ -95,19 +95,64 @@ public class DatabaseManager {
 	public boolean delEmployee(int id) throws Exception {
 		try {  
 			//TODO: MUST UPDATE TO PREPARED STATEMENT TO PREVENT POSSIBLE INJECTION!
-			//TODO: FLAGGED DELETION INSTEAD OF DELETE COMPLETELY (add flag "em_deleted" which can be toggled)
 			
 			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
 			Statement dbStatement = databaseConnection.createStatement();
-			dbStatement.executeQuery("DELETE FROM employee_data WHERE em_id = " + id + " LIMIT 1");
+			boolean error = dbStatement.execute("UPDATE employee_data SET em_deleted = 1 WHERE em_id = " + id + " LIMIT 1");
 
 			databaseConnection.close();
 			
-			return true;
+			return error;
 		}
 		catch(Exception e) {
 			// Pass the exception up for handling in the application.
 			throw e;
 		}
+	}
+
+	///
+	/// DEBUG METHOD
+	/// Undeletes all employees
+	///
+	public boolean undelAll() throws Exception {
+		try {  
+			//TODO: MUST UPDATE TO PREPARED STATEMENT TO PREVENT POSSIBLE INJECTION!
+			
+			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
+			Statement dbStatement = databaseConnection.createStatement();
+			boolean error = dbStatement.execute("UPDATE employee_data SET em_deleted = 0 WHERE 1");
+
+			databaseConnection.close();
+			
+			return error;
+		}
+		catch(Exception e) {
+			// Pass the exception up for handling in the application.
+			throw e;
+		}
+		
+	}
+	
+	///
+	/// DEBUG METHOD
+	/// Deletes all employees
+	///
+	public boolean delAll() throws Exception {
+		try {  
+			//TODO: MUST UPDATE TO PREPARED STATEMENT TO PREVENT POSSIBLE INJECTION!
+			
+			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
+			Statement dbStatement = databaseConnection.createStatement();
+			boolean error = dbStatement.execute("UPDATE employee_data SET em_deleted = 1 WHERE 1");
+
+			databaseConnection.close();
+			
+			return error;
+		}
+		catch(Exception e) {
+			// Pass the exception up for handling in the application.
+			throw e;
+		}
+		
 	}
 }

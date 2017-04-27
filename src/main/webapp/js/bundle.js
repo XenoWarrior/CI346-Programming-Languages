@@ -9546,6 +9546,58 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var EmployeeClient = {
+	deleteEmployee: function deleteEmployee(id) {
+		$.ajax({
+			method: "DELETE",
+			url: "./api/employee/" + id
+		}).done(function (msg) {
+			var response = JSON.parse(msg);
+			console.log(response);
+
+			if (typeof response['error'] != "undefined") {
+				$('#error-modal').modal('open');
+				$("#error-text").text(response['error']);
+			} else {
+				(0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('employee-target'));
+			}
+		});
+	},
+	editEmployee: function editEmployee() {},
+	debugUndeleteAll: function debugUndeleteAll() {
+		$.ajax({
+			method: "GET",
+			url: "./api/debug/undeleteall"
+		}).done(function (msg) {
+			var response = JSON.parse(msg);
+			console.log(response);
+
+			if (typeof response['error'] != "undefined") {
+				$('#error-modal').modal('open');
+				$("#error-text").text(response['error']);
+			} else {
+				(0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('employee-target'));
+			}
+		});
+	},
+	debugDeleteAll: function debugDeleteAll() {
+		$.ajax({
+			method: "DELETE",
+			url: "./api/debug/deleteall"
+		}).done(function (msg) {
+			var response = JSON.parse(msg);
+			console.log(response);
+
+			if (typeof response['error'] != "undefined") {
+				$('#error-modal').modal('open');
+				$("#error-text").text(response['error']);
+			} else {
+				(0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('employee-target'));
+			}
+		});
+	}
+};
+
 var Employee = function (_React$Component) {
 	_inherits(Employee, _React$Component);
 
@@ -9562,7 +9614,7 @@ var Employee = function (_React$Component) {
 			console.log(this.props);
 			return _react2.default.createElement(
 				'tr',
-				null,
+				{ id: "employee-" + this.props.employeeObject['id'] },
 				_react2.default.createElement(
 					'td',
 					null,
@@ -9580,8 +9632,21 @@ var Employee = function (_React$Component) {
 				),
 				_react2.default.createElement(
 					'td',
-					null,
-					'BUTTONS TO ADD'
+					{ className: 'center-align' },
+					_react2.default.createElement(
+						'div',
+						null,
+						_react2.default.createElement(
+							'a',
+							{ onClick: EmployeeClient.deleteEmployee.bind(this, this.props.employeeObject['id']), className: 'space waves-effect waves-light btn' },
+							'Delete'
+						),
+						_react2.default.createElement(
+							'a',
+							{ onClick: EmployeeClient.editEmployee.bind(this), className: 'waves-effect waves-light btn' },
+							'Edit'
+						)
+					)
 				)
 			);
 		}
@@ -9635,7 +9700,7 @@ var EmployeeList = function (_React$Component2) {
 						),
 						_react2.default.createElement(
 							'th',
-							null,
+							{ className: 'center-align' },
 							'Actions'
 						)
 					)
@@ -9675,8 +9740,88 @@ var ErrorComponent = function (_React$Component3) {
 	return ErrorComponent;
 }(_react2.default.Component);
 
-var App = function (_React$Component4) {
-	_inherits(App, _React$Component4);
+var Debug = function (_React$Component4) {
+	_inherits(Debug, _React$Component4);
+
+	function Debug() {
+		_classCallCheck(this, Debug);
+
+		return _possibleConstructorReturn(this, (Debug.__proto__ || Object.getPrototypeOf(Debug)).apply(this, arguments));
+	}
+
+	_createClass(Debug, [{
+		key: 'render',
+		value: function render() {
+			return _react2.default.createElement(
+				'table',
+				null,
+				_react2.default.createElement(
+					'thead',
+					null,
+					_react2.default.createElement(
+						'tr',
+						null,
+						_react2.default.createElement(
+							'th',
+							null,
+							'Action'
+						),
+						_react2.default.createElement(
+							'th',
+							null,
+							'Button'
+						)
+					)
+				),
+				_react2.default.createElement(
+					'tbody',
+					null,
+					_react2.default.createElement(
+						'tr',
+						null,
+						_react2.default.createElement(
+							'td',
+							null,
+							'Undelete All Employees'
+						),
+						_react2.default.createElement(
+							'td',
+							null,
+							_react2.default.createElement(
+								'a',
+								{ onClick: EmployeeClient.debugUndeleteAll.bind(this), className: 'waves-effect waves-light btn' },
+								'Go'
+							)
+						)
+					),
+					_react2.default.createElement(
+						'tr',
+						null,
+						_react2.default.createElement(
+							'td',
+							null,
+							'Delete All Employees'
+						),
+						_react2.default.createElement(
+							'td',
+							null,
+							_react2.default.createElement(
+								'a',
+								{ onClick: EmployeeClient.debugDeleteAll.bind(this), className: 'waves-effect waves-light btn' },
+								'Go'
+							)
+						)
+					)
+				)
+			);
+		}
+	}]);
+
+	return Debug;
+}(_react2.default.Component);
+
+var App = function (_React$Component5) {
+	_inherits(App, _React$Component5);
 
 	function App(props) {
 		_classCallCheck(this, App);
@@ -9724,7 +9869,8 @@ var App = function (_React$Component4) {
 	return App;
 }(_react2.default.Component);
 
-(0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('target'));
+(0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('employee-target'));
+(0, _reactDom.render)(_react2.default.createElement(Debug, null), document.getElementById('debug-target'));
 
 /***/ }),
 /* 83 */
