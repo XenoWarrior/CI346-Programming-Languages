@@ -1,50 +1,80 @@
 package com.projectge.ci346;
 
+import com.projectge.*; // Some errors show up if this is not imported, but it works regardless...
+
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.ResultSet;
-import java.util.List;
-import java.util.ArrayList;
-
-import gson
+import java.util.*;
+import com.google.gson.Gson;
 
 @RestController
 public class BackEnd {
 
-	private ArrayList<EmployeeData> employeeList;
+	Gson gson = new Gson();
 	
-	@RequestMapping(value = "/api", method = RequestMethod.GET)
+	@RequestMapping(value = "/api", method = RequestMethod.GET, produces = "plain/text")
 	public String GetIndex() {
-		return "{\"error\": 1, \"message\": \"Unknown route.\"}";
-	}
+		HashMap<String, String> finalResults = HashMap<String, String>();
 
-	@RequestMapping(value = "/api/employees", method = RequestMethod.GET)
-	public String GetEmployeeList() {
-		DatabaseManager db = new DatabaseManager();
-		List dbResults = db.getEmployees();
+		finalResults.put("error", "This is the entry route.");
 		
-		if(dbResults != null) {
-			return "{\"error\": 0, \"message\": \"" + dbResults.toString() + "\"}";
+		return gson.toJson(finalResults);
+	}
+
+	@RequestMapping(value = "/api/employees", method = RequestMethod.GET, produces = "plain/text")
+	public String GetEmployeeList() {
+		HashMap<String, String> finalResults = new HashMap<String, String>();
+		
+		try {
+			DatabaseManager db = new DatabaseManager();
+			
+			ArrayList<EmployeeData> dbResults = db.getEmployees();
+			if(dbResults != null) {
+				for (EmployeeData e : dbResults) {
+					HashMap<String, String> items = new HashMap<String, String>();
+
+					items.put("id", String.valueOf(e.getID()));
+					items.put("fullname", e.getFullName());
+					items.put("shift", e.getShift());
+					
+					finalResults.put(String.valueOf(finalResults.size()), gson.toJson(items));
+				}
+				
+				return gson.toJson(finalResults);
+			}
+			else {
+				finalResults.put("error", "No results found.");
+				
+				return gson.toJson(finalResults);
+			}
 		}
-		else {
-			return "{\"error\": 1, \"message\": \"No results found.\"}";
+		catch(Exception e) {
+			finalResults.put("error", "Exception Caught: " + e.getLocalizedMessage());
+			
+			return gson.toJson(finalResults);
 		}
 	}
 	
-	@RequestMapping(value = "/api/employee/{id}", method = RequestMethod.GET)
-	public String GetEmployee(@RequestParam("id") int id) {
+	@RequestMapping(value = "/api/employee/{id}", method = RequestMethod.GET, produces = "plain/text")
+	public String GetEmployee(@PathVariable("id") int id) {
 		DatabaseManager db = new DatabaseManager();
-		List dbResults = db.getEmployee(id);
+		
+		ArrayList<EmployeeData> dbResults = db.getEmployee(id);
+        Map<String, String> finalResults = new HashMap<String, String>();
 
 		if(dbResults != null) {
-			return "{\"error\": 0, \"message\": \"" + dbResults.toString() + "\"}";
+			finalResults.put("error", "No results found.");
+			
+			return gson.toJson(finalResults);
 		}
 		else {
-			return "{\"error\": 1, \"message\": \"No results found, or an error occured.\"}";
+			finalResults.put("message", "No results found.");
+			
+			return gson.toJson(finalResults);
 		}
 	}
-	
 }

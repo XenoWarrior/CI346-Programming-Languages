@@ -9546,23 +9546,178 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var App = function (_React$Component) {
-	_inherits(App, _React$Component);
+var Employee = function (_React$Component) {
+	_inherits(Employee, _React$Component);
 
-	function App() {
+	function Employee() {
+		_classCallCheck(this, Employee);
+
+		return _possibleConstructorReturn(this, (Employee.__proto__ || Object.getPrototypeOf(Employee)).apply(this, arguments));
+	}
+
+	_createClass(Employee, [{
+		key: 'render',
+		value: function render() {
+			console.log("Employee::render()");
+			console.log(this.props);
+			return _react2.default.createElement(
+				'tr',
+				null,
+				_react2.default.createElement(
+					'td',
+					null,
+					this.props.employeeObject['id']
+				),
+				_react2.default.createElement(
+					'td',
+					null,
+					this.props.employeeObject['fullname']
+				),
+				_react2.default.createElement(
+					'td',
+					null,
+					this.props.employeeObject['shift']
+				),
+				_react2.default.createElement(
+					'td',
+					null,
+					'BUTTONS TO ADD'
+				)
+			);
+		}
+	}]);
+
+	return Employee;
+}(_react2.default.Component);
+
+var EmployeeList = function (_React$Component2) {
+	_inherits(EmployeeList, _React$Component2);
+
+	function EmployeeList() {
+		_classCallCheck(this, EmployeeList);
+
+		return _possibleConstructorReturn(this, (EmployeeList.__proto__ || Object.getPrototypeOf(EmployeeList)).apply(this, arguments));
+	}
+
+	_createClass(EmployeeList, [{
+		key: 'render',
+		value: function render() {
+			console.log("EmployeeList::render()");
+			console.log(this.props.employeeList);
+
+			var employeeList = Object.values(this.props.employeeList).map(function (employeeObject) {
+				return _react2.default.createElement(Employee, { employeeObject: JSON.parse(employeeObject) });
+			});
+
+			return _react2.default.createElement(
+				'table',
+				null,
+				_react2.default.createElement(
+					'thead',
+					null,
+					_react2.default.createElement(
+						'tr',
+						null,
+						_react2.default.createElement(
+							'th',
+							null,
+							'ID'
+						),
+						_react2.default.createElement(
+							'th',
+							null,
+							'Name'
+						),
+						_react2.default.createElement(
+							'th',
+							null,
+							'Shift'
+						),
+						_react2.default.createElement(
+							'th',
+							null,
+							'Actions'
+						)
+					)
+				),
+				_react2.default.createElement(
+					'tbody',
+					null,
+					employeeList
+				)
+			);
+		}
+	}]);
+
+	return EmployeeList;
+}(_react2.default.Component);
+
+var ErrorComponent = function (_React$Component3) {
+	_inherits(ErrorComponent, _React$Component3);
+
+	function ErrorComponent() {
+		_classCallCheck(this, ErrorComponent);
+
+		return _possibleConstructorReturn(this, (ErrorComponent.__proto__ || Object.getPrototypeOf(ErrorComponent)).apply(this, arguments));
+	}
+
+	_createClass(ErrorComponent, [{
+		key: 'render',
+		value: function render() {
+			return _react2.default.createElement(
+				'p',
+				null,
+				'An error occured.'
+			);
+		}
+	}]);
+
+	return ErrorComponent;
+}(_react2.default.Component);
+
+var App = function (_React$Component4) {
+	_inherits(App, _React$Component4);
+
+	function App(props) {
 		_classCallCheck(this, App);
 
-		return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
+		console.log("App::constructor(props)");
+		return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 	}
 
 	_createClass(App, [{
 		key: 'render',
 		value: function render() {
-			return _react2.default.createElement(
-				'h1',
-				null,
-				'Hello World'
-			);
+			console.log("App::render()");
+
+			var employeeList = {};
+			var finalResult = _react2.default.Component();
+
+			$.ajax({
+				method: "GET",
+				async: false,
+				url: "./api/employees"
+			}).done(function (msg) {
+				console.log("Done fetching EmployeeList");
+				employeeList = JSON.parse(msg);
+				console.log(employeeList);
+
+				if (typeof employeeList['error'] != "undefined") {
+					employeeList = {};
+
+					$('#error-modal').modal('open');
+					$("#error-text").text(employeeList['error']);
+
+					console.log("Returning ErrorComponent");
+					finalResult = _react2.default.createElement(ErrorComponent, null);
+				}
+
+				console.log("Returning EmployeeList");
+				finalResult = _react2.default.createElement(EmployeeList, { employeeList: employeeList });
+			});
+
+			console.log(finalResult);
+			return finalResult;
 		}
 	}]);
 

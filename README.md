@@ -15,4 +15,4 @@ If all is setup correctly, you should be able to run `mvn -v` and see `Apache Ma
 You can now setup the project using `mvn install` and `npm install -g` (remove `-g` if you do not want a global installation)
 
 ## Running
-The project should compile and run by simply running `mvn wildfly:run`. You can open another command line window to run `mvn wildfly:deploy` so that you do not need to close and open the server after every change.
+The project should compile and run by simply running `mvn spring-boot:run`.

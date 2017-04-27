@@ -14,4 +14,16 @@ public class EmployeeData {
 		this.employeeShift = shift;
 	}
 	
+	public int getID() {
+		return this.employeeID;
+	}
+	
+	public String getFullName() {
+		return this.employeeFName + " " + this.employeeSName;
+	}
+
+	public String getShift() {
+		return this.employeeShift;
+	}
+	
 }
