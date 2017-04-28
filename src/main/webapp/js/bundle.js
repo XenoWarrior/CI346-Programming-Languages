@@ -9546,328 +9546,486 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+/**
+ * EmployeeClient (Object)
+ * 
+ * Standard object which contains methods that talk with the API after the page has loaded.
+ */
 var EmployeeClient = {
-	deleteEmployee: function deleteEmployee(id) {
-		$.ajax({
-			method: "DELETE",
-			url: "./api/employee/" + id
-		}).done(function (msg) {
-			var response = JSON.parse(msg);
-			console.log(response);
+  deleteEmployee: function deleteEmployee(id) {
+    $.ajax({
+      method: "DELETE",
+      url: "./api/employee/" + id
+    }).done(function (msg) {
+      var response = JSON.parse(msg);
 
-			if (typeof response['error'] != "undefined") {
-				$('#error-modal').modal('open');
-				$("#error-text").text(response['error']);
-			} else {
-				(0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('employee-target'));
-			}
-		});
-	},
-	editEmployee: function editEmployee() {},
-	debugUndeleteAll: function debugUndeleteAll() {
-		$.ajax({
-			method: "GET",
-			url: "./api/debug/undeleteall"
-		}).done(function (msg) {
-			var response = JSON.parse(msg);
-			console.log(response);
+      console.log("EmployeeClient::deleteEmployee() response:");
+      console.log(response);
 
-			if (typeof response['error'] != "undefined") {
-				$('#error-modal').modal('open');
-				$("#error-text").text(response['error']);
-			} else {
-				(0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('employee-target'));
-			}
-		});
-	},
-	debugDeleteAll: function debugDeleteAll() {
-		$.ajax({
-			method: "DELETE",
-			url: "./api/debug/deleteall"
-		}).done(function (msg) {
-			var response = JSON.parse(msg);
-			console.log(response);
-
-			if (typeof response['error'] != "undefined") {
-				$('#error-modal').modal('open');
-				$("#error-text").text(response['error']);
-			} else {
-				(0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('employee-target'));
-			}
-		});
-	}
+      if (typeof response['error'] != "undefined") {
+        (0, _reactDom.render)(_react2.default.createElement(Error, { title: "Error", message: response['error'] }), document.getElementById('employee-target'));
+      } else {
+        (0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('employee-target'));
+      }
+    });
+  },
+  editEmployee: function editEmployee() {}
 };
 
+/**
+ * DebugClient (Object)
+ * 
+ * Standard object similar to EmployeeClient, used to make developing the website all that much easier. 
+ */
+var DebugClient = {
+
+  // Used for undeleting all records in the database.
+  // Method: GET
+  debugUndeleteAll: function debugUndeleteAll() {
+    $.ajax({
+      method: "GET",
+      url: "./api/debug/undeleteall"
+    }).done(function (msg) {
+      var response = JSON.parse(msg);
+      //console.log(response);
+
+      if (typeof response['error'] != "undefined") {
+        (0, _reactDom.render)(_react2.default.createElement(Error, { title: "Error", message: response['error'] }), document.getElementById('employee-target'));
+      } else {
+        (0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('employee-target'));
+      }
+    });
+  },
+
+  // Used for deleting all records in the database.
+  // Method: DELETE
+  debugDeleteAll: function debugDeleteAll() {
+    $.ajax({
+      method: "DELETE",
+      url: "./api/debug/deleteall"
+    }).done(function (msg) {
+      var response = JSON.parse(msg);
+      //console.log(response);
+
+      if (typeof response['error'] != "undefined") {
+        $('#error-modal').modal('open');
+        $("#error-text").text(response['error']);
+      } else {
+        (0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('employee-target'));
+      }
+    });
+  },
+
+  // Used to reload the document without refreshing the page.
+  rerenderDocument: function rerenderDocument() {
+    (0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('employee-target'));
+    (0, _reactDom.render)(_react2.default.createElement(Debug, null), document.getElementById('debug-target'));
+  }
+};
+
+/**
+ * Employee (React.Component)
+ * 
+ * The React.Component for each individual employee in the EmployeeList React.Component 
+ */
+
 var Employee = function (_React$Component) {
-	_inherits(Employee, _React$Component);
+  _inherits(Employee, _React$Component);
 
-	function Employee() {
-		_classCallCheck(this, Employee);
+  function Employee() {
+    _classCallCheck(this, Employee);
 
-		return _possibleConstructorReturn(this, (Employee.__proto__ || Object.getPrototypeOf(Employee)).apply(this, arguments));
-	}
+    return _possibleConstructorReturn(this, (Employee.__proto__ || Object.getPrototypeOf(Employee)).apply(this, arguments));
+  }
 
-	_createClass(Employee, [{
-		key: 'render',
-		value: function render() {
-			console.log("Employee::render()");
-			console.log(this.props);
-			return _react2.default.createElement(
-				'tr',
-				{ id: "employee-" + this.props.employeeObject['id'] },
-				_react2.default.createElement(
-					'td',
-					null,
-					this.props.employeeObject['id']
-				),
-				_react2.default.createElement(
-					'td',
-					null,
-					this.props.employeeObject['fullname']
-				),
-				_react2.default.createElement(
-					'td',
-					null,
-					this.props.employeeObject['shift']
-				),
-				_react2.default.createElement(
-					'td',
-					{ className: 'center-align' },
-					_react2.default.createElement(
-						'div',
-						null,
-						_react2.default.createElement(
-							'a',
-							{ onClick: EmployeeClient.deleteEmployee.bind(this, this.props.employeeObject['id']), className: 'space waves-effect waves-light btn' },
-							'Delete'
-						),
-						_react2.default.createElement(
-							'a',
-							{ onClick: EmployeeClient.editEmployee.bind(this), className: 'waves-effect waves-light btn' },
-							'Edit'
-						)
-					)
-				)
-			);
-		}
-	}]);
+  _createClass(Employee, [{
+    key: 'render',
+    value: function render() {
+      console.log("Employee::render() props:");
+      console.log(this.props);
+      return _react2.default.createElement(
+        'tr',
+        { id: "employee-" + this.props.employeeObject['id'] },
+        _react2.default.createElement(
+          'td',
+          null,
+          this.props.employeeObject['id']
+        ),
+        _react2.default.createElement(
+          'td',
+          null,
+          this.props.employeeObject['fullname']
+        ),
+        _react2.default.createElement(
+          'td',
+          null,
+          this.props.employeeObject['shift']
+        ),
+        _react2.default.createElement(
+          'td',
+          { className: 'center-align' },
+          _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(
+              'a',
+              { onClick: EmployeeClient.deleteEmployee.bind(this, this.props.employeeObject['id']), className: 'space waves-effect waves-light btn' },
+              'Delete'
+            ),
+            _react2.default.createElement(
+              'a',
+              { onClick: EmployeeClient.editEmployee.bind(this), className: 'waves-effect waves-light btn' },
+              'Edit'
+            )
+          )
+        )
+      );
+    }
+  }]);
 
-	return Employee;
+  return Employee;
 }(_react2.default.Component);
+
+/**
+ * EmployeeList (React.Component)
+ * 
+ * The React.Component which contains all the employees in a table, appends Employee React.Component in {employeeList}.
+ */
+
 
 var EmployeeList = function (_React$Component2) {
-	_inherits(EmployeeList, _React$Component2);
+  _inherits(EmployeeList, _React$Component2);
 
-	function EmployeeList() {
-		_classCallCheck(this, EmployeeList);
+  function EmployeeList() {
+    _classCallCheck(this, EmployeeList);
 
-		return _possibleConstructorReturn(this, (EmployeeList.__proto__ || Object.getPrototypeOf(EmployeeList)).apply(this, arguments));
-	}
+    return _possibleConstructorReturn(this, (EmployeeList.__proto__ || Object.getPrototypeOf(EmployeeList)).apply(this, arguments));
+  }
 
-	_createClass(EmployeeList, [{
-		key: 'render',
-		value: function render() {
-			console.log("EmployeeList::render()");
-			console.log(this.props.employeeList);
+  _createClass(EmployeeList, [{
+    key: 'render',
+    value: function render() {
+      console.log("EmployeeList::render() employeeList:");
+      console.log(this.props.employeeList);
 
-			var employeeList = Object.values(this.props.employeeList).map(function (employeeObject) {
-				return _react2.default.createElement(Employee, { employeeObject: JSON.parse(employeeObject) });
-			});
+      var employeeList = Object.values(this.props.employeeList).map(function (employeeObject) {
+        return _react2.default.createElement(Employee, { employeeObject: JSON.parse(employeeObject) });
+      });
 
-			return _react2.default.createElement(
-				'table',
-				null,
-				_react2.default.createElement(
-					'thead',
-					null,
-					_react2.default.createElement(
-						'tr',
-						null,
-						_react2.default.createElement(
-							'th',
-							null,
-							'ID'
-						),
-						_react2.default.createElement(
-							'th',
-							null,
-							'Name'
-						),
-						_react2.default.createElement(
-							'th',
-							null,
-							'Shift'
-						),
-						_react2.default.createElement(
-							'th',
-							{ className: 'center-align' },
-							'Actions'
-						)
-					)
-				),
-				_react2.default.createElement(
-					'tbody',
-					null,
-					employeeList
-				)
-			);
-		}
-	}]);
+      return _react2.default.createElement(
+        'table',
+        null,
+        _react2.default.createElement(
+          'thead',
+          null,
+          _react2.default.createElement(
+            'tr',
+            null,
+            _react2.default.createElement(
+              'th',
+              null,
+              'ID'
+            ),
+            _react2.default.createElement(
+              'th',
+              null,
+              'Name'
+            ),
+            _react2.default.createElement(
+              'th',
+              null,
+              'Shift'
+            ),
+            _react2.default.createElement(
+              'th',
+              { className: 'center-align' },
+              'Actions'
+            )
+          )
+        ),
+        _react2.default.createElement(
+          'tbody',
+          null,
+          employeeList
+        )
+      );
+    }
+  }]);
 
-	return EmployeeList;
+  return EmployeeList;
 }(_react2.default.Component);
 
-var ErrorComponent = function (_React$Component3) {
-	_inherits(ErrorComponent, _React$Component3);
+/**
+ * Error (React.Component)
+ * 
+ * The React.Component which pushes errors to the screen.
+ */
 
-	function ErrorComponent() {
-		_classCallCheck(this, ErrorComponent);
 
-		return _possibleConstructorReturn(this, (ErrorComponent.__proto__ || Object.getPrototypeOf(ErrorComponent)).apply(this, arguments));
-	}
+var Error = function (_React$Component3) {
+  _inherits(Error, _React$Component3);
 
-	_createClass(ErrorComponent, [{
-		key: 'render',
-		value: function render() {
-			return _react2.default.createElement(
-				'p',
-				null,
-				'An error occured.'
-			);
-		}
-	}]);
+  function Error() {
+    _classCallCheck(this, Error);
 
-	return ErrorComponent;
+    return _possibleConstructorReturn(this, (Error.__proto__ || Object.getPrototypeOf(Error)).apply(this, arguments));
+  }
+
+  _createClass(Error, [{
+    key: 'render',
+    value: function render() {
+      console.log("Error::render() props:");
+      console.log(this.props);
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'row' },
+        _react2.default.createElement(
+          'div',
+          { className: 'col s12' },
+          _react2.default.createElement(
+            'div',
+            { className: 'card blue-grey darken-1' },
+            _react2.default.createElement(
+              'div',
+              { className: 'card-content white-text' },
+              _react2.default.createElement(
+                'span',
+                { className: 'card-title' },
+                this.props.title
+              ),
+              _react2.default.createElement(
+                'p',
+                null,
+                this.props.message
+              )
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'card-action' },
+              _react2.default.createElement(
+                'a',
+                { href: './' },
+                'Reload'
+              )
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return Error;
 }(_react2.default.Component);
+
+/**
+ * Debug (React.Component)
+ * 
+ * The React.Component for pushing debug controls to screen.
+ * Can be disabled at the bottom of this file by removing the render(<Debug />, {...});
+ */
+
 
 var Debug = function (_React$Component4) {
-	_inherits(Debug, _React$Component4);
+  _inherits(Debug, _React$Component4);
 
-	function Debug() {
-		_classCallCheck(this, Debug);
+  function Debug() {
+    _classCallCheck(this, Debug);
 
-		return _possibleConstructorReturn(this, (Debug.__proto__ || Object.getPrototypeOf(Debug)).apply(this, arguments));
-	}
+    return _possibleConstructorReturn(this, (Debug.__proto__ || Object.getPrototypeOf(Debug)).apply(this, arguments));
+  }
 
-	_createClass(Debug, [{
-		key: 'render',
-		value: function render() {
-			return _react2.default.createElement(
-				'table',
-				null,
-				_react2.default.createElement(
-					'thead',
-					null,
-					_react2.default.createElement(
-						'tr',
-						null,
-						_react2.default.createElement(
-							'th',
-							null,
-							'Action'
-						),
-						_react2.default.createElement(
-							'th',
-							null,
-							'Button'
-						)
-					)
-				),
-				_react2.default.createElement(
-					'tbody',
-					null,
-					_react2.default.createElement(
-						'tr',
-						null,
-						_react2.default.createElement(
-							'td',
-							null,
-							'Undelete All Employees'
-						),
-						_react2.default.createElement(
-							'td',
-							null,
-							_react2.default.createElement(
-								'a',
-								{ onClick: EmployeeClient.debugUndeleteAll.bind(this), className: 'waves-effect waves-light btn' },
-								'Go'
-							)
-						)
-					),
-					_react2.default.createElement(
-						'tr',
-						null,
-						_react2.default.createElement(
-							'td',
-							null,
-							'Delete All Employees'
-						),
-						_react2.default.createElement(
-							'td',
-							null,
-							_react2.default.createElement(
-								'a',
-								{ onClick: EmployeeClient.debugDeleteAll.bind(this), className: 'waves-effect waves-light btn' },
-								'Go'
-							)
-						)
-					)
-				)
-			);
-		}
-	}]);
+  _createClass(Debug, [{
+    key: 'render',
+    value: function render() {
+      //console.log("Debug::render()");
 
-	return Debug;
+      return _react2.default.createElement(
+        'table',
+        null,
+        _react2.default.createElement(
+          'thead',
+          null,
+          _react2.default.createElement(
+            'tr',
+            null,
+            _react2.default.createElement(
+              'th',
+              null,
+              'Action'
+            ),
+            _react2.default.createElement(
+              'th',
+              { className: 'center-align' },
+              'Button'
+            )
+          )
+        ),
+        _react2.default.createElement(
+          'tbody',
+          null,
+          _react2.default.createElement(
+            'tr',
+            null,
+            _react2.default.createElement(
+              'td',
+              null,
+              'Undelete All Employees'
+            ),
+            _react2.default.createElement(
+              'td',
+              { className: 'center-align' },
+              _react2.default.createElement(
+                'a',
+                { onClick: DebugClient.debugUndeleteAll.bind(this), className: 'waves-effect waves-light btn' },
+                'Go'
+              )
+            )
+          ),
+          _react2.default.createElement(
+            'tr',
+            null,
+            _react2.default.createElement(
+              'td',
+              null,
+              'Delete All Employees'
+            ),
+            _react2.default.createElement(
+              'td',
+              { className: 'center-align' },
+              _react2.default.createElement(
+                'a',
+                { onClick: DebugClient.debugDeleteAll.bind(this), className: 'waves-effect waves-light btn' },
+                'Go'
+              )
+            )
+          ),
+          _react2.default.createElement(
+            'tr',
+            null,
+            _react2.default.createElement(
+              'td',
+              null,
+              'Rerender Document'
+            ),
+            _react2.default.createElement(
+              'td',
+              { className: 'center-align' },
+              _react2.default.createElement(
+                'a',
+                { onClick: DebugClient.rerenderDocument.bind(this), className: 'waves-effect waves-light btn' },
+                'Go'
+              )
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return Debug;
 }(_react2.default.Component);
+
+/**
+ * App (React.Component)
+ * 
+ * The React.Component for entry into the web application.
+ * This component sets up the initial employee list or displays an error on failure.
+ * It will attempt to reconnect upon error.
+ */
+
 
 var App = function (_React$Component5) {
-	_inherits(App, _React$Component5);
+  _inherits(App, _React$Component5);
 
-	function App(props) {
-		_classCallCheck(this, App);
+  function App(props) {
+    _classCallCheck(this, App);
 
-		console.log("App::constructor(props)");
-		return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
-	}
+    console.log("App::constructor(props)");
+    return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+  }
 
-	_createClass(App, [{
-		key: 'render',
-		value: function render() {
-			console.log("App::render()");
+  _createClass(App, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var response = {};
 
-			var employeeList = {};
-			var finalResult = _react2.default.Component();
+      // Used to recall this method if there is a failure.
+      var _this = this;
 
-			$.ajax({
-				method: "GET",
-				async: false,
-				url: "./api/employees"
-			}).done(function (msg) {
-				console.log("Done fetching EmployeeList");
-				employeeList = JSON.parse(msg);
-				console.log(employeeList);
+      $.ajax({
+        method: "GET",
+        async: true,
+        url: "./api/employees"
+      }).done(function (msg) {
+        response = JSON.parse(msg);
 
-				if (typeof employeeList['error'] != "undefined") {
-					employeeList = {};
+        console.log("App::componentDidMount() ajax.done() response:");
+        console.log(response);
 
-					$('#error-modal').modal('open');
-					$("#error-text").text(employeeList['error']);
+        if (typeof response['error'] != "undefined") {
+          // Checking for error, if this is the case, display an error on the screen.
+          console.log("Response error, pushing error to screen.");
 
-					console.log("Returning ErrorComponent");
-					finalResult = _react2.default.createElement(ErrorComponent, null);
-				}
+          var errorMessageComponent = _react2.default.createElement(Error, { title: "Error", message: response['error'] + " Retrying..." });
+          (0, _reactDom.render)(errorMessageComponent, document.getElementById('employee-target'));
 
-				console.log("Returning EmployeeList");
-				finalResult = _react2.default.createElement(EmployeeList, { employeeList: employeeList });
-			});
+          console.log("Attempting reconnection...");
+          _this.componentDidMount();
+        } else {
+          // Checking for undefined error, if this is the case, no error actually occurred.
+          console.log("Response success, setting up employee list...");
+          var employeeListComponent = _react2.default.createElement(EmployeeList, { employeeList: response });
 
-			console.log(finalResult);
-			return finalResult;
-		}
-	}]);
+          // Render the new employee list.
+          console.log("Rendering...");
+          (0, _reactDom.render)(employeeListComponent, document.getElementById('employee-target'));
 
-	return App;
+          // Cache employee list for potential refresh later.
+          console.log("Caching employeeList in DataStorage:");
+          DataStorage['hasLoaded'] = true;
+          DataStorage['lastEmployeeList'] = employeeListComponent;
+          console.log(DataStorage);
+        }
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      //console.log("App::render()");
+
+      // Check if we've loaded.
+      // Continue to slow last employee list if already loaded to prevent the screen from flickering the loading message.
+      if (DataStorage['hasLoaded']) {
+        console.log("Setting last employee list while waiting for new list...");
+        return DataStorage['lastEmployeeList'];
+      }
+
+      // For the first load, show a message.
+      // Will vanish quick if server responds quickly.
+      console.log("Setting first time load message...");
+      console.log(DataStorage['notLoadedState']);
+      return DataStorage['notLoadedState'];
+    }
+  }]);
+
+  return App;
 }(_react2.default.Component);
+
+/**
+ * DataStorage (Object)
+ * 
+ * Used to keep some values cached such as a previous employee list 
+ * for when the user performs an action that updates the page, preventing it
+ * from jumping them back to the top of the screen.
+ */
+
+
+var DataStorage = {
+  hasLoaded: false,
+  lastEmployeeState: 0,
+  notLoadedState: _react2.default.createElement(Error, { title: "Loading", message: "Fetching employee list..." })
+};
 
 (0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('employee-target'));
 (0, _reactDom.render)(_react2.default.createElement(Debug, null), document.getElementById('debug-target'));
