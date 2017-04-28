@@ -2,6 +2,7 @@ package com.projectge.ci346;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class DatabaseManager {
 			Class.forName("com.mysql.jdbc.Driver");
 
 			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
+			
 			Statement dbStatement = databaseConnection.createStatement();  
 			ResultSet dbResults = dbStatement.executeQuery("SELECT * FROM employee_data WHERE 1 LIMIT 1");
 			
@@ -45,6 +47,7 @@ public class DatabaseManager {
 	public ArrayList<EmployeeData> GetEmployees() throws Exception {
 		try {  
 			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
+			
 			Statement dbStatement = databaseConnection.createStatement();  
 			ResultSet dbResults = dbStatement.executeQuery("SELECT * FROM employee_data WHERE em_deleted = 0");
 			
@@ -67,12 +70,15 @@ public class DatabaseManager {
 	/// Gets a single employee from the database
 	///
 	public ArrayList<EmployeeData> GetEmployee(int id) throws Exception {
-		try {  
-			//TODO: MUST UPDATE TO PREPARED STATEMENT TO PREVENT POSSIBLE INJECTION!
-
+		try {
 			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
-			Statement dbStatement = databaseConnection.createStatement();
-			ResultSet dbResults = dbStatement.executeQuery("SELECT * FROM employee_data WHERE em_id = " + id + " LIMIT 1");
+			
+			String queryString = "SELECT * FROM employee_data WHERE em_id = ? LIMIT 1";
+			
+			PreparedStatement preparedQuery = databaseConnection.prepareStatement(queryString);
+			preparedQuery.setString(1, String.valueOf(id));
+			
+			ResultSet dbResults = preparedQuery.executeQuery();
 
 			ArrayList<EmployeeData> finalResults = new ArrayList<EmployeeData>();
 			while(dbResults.next()) {
@@ -94,12 +100,15 @@ public class DatabaseManager {
 	///
 	public boolean DelEmployee(int id) throws Exception {
 		try {  
-			//TODO: MUST UPDATE TO PREPARED STATEMENT TO PREVENT POSSIBLE INJECTION!
-			
 			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
-			Statement dbStatement = databaseConnection.createStatement();
-			boolean error = dbStatement.execute("UPDATE employee_data SET em_deleted = 1 WHERE em_id = " + id + " LIMIT 1");
 
+			String queryString = "UPDATE employee_data SET em_deleted = 1 WHERE em_id = ? LIMIT 1";
+			
+			PreparedStatement preparedQuery = databaseConnection.prepareStatement(queryString);
+			preparedQuery.setString(1, String.valueOf(id));
+			
+			boolean error = preparedQuery.execute();
+			
 			databaseConnection.close();
 			
 			return error;
@@ -113,13 +122,19 @@ public class DatabaseManager {
 	///
 	/// Edits a single employee in the database
 	///
-	public boolean EditEmployee(int id, String name, String shift) throws Exception {
-		try {  
-			//TODO: MUST UPDATE TO PREPARED STATEMENT TO PREVENT POSSIBLE INJECTION!
-			
+	public boolean EditEmployee(int id, String fname, String lname, String shift) throws Exception {
+		try {
 			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
-			Statement dbStatement = databaseConnection.createStatement();
-			boolean error = dbStatement.execute("UPDATE employee_data SET em_name = " + name + ", em_shift = " + shift + " WHERE em_id = " + id + " LIMIT 1");
+
+			String queryString = "UPDATE employee_data SET em_firstname = ?, em_lastname = ?, em_shift = ? WHERE em_id = ? LIMIT 1";
+			
+			PreparedStatement preparedQuery = databaseConnection.prepareStatement(queryString);
+			preparedQuery.setString(1, fname);
+			preparedQuery.setString(2, lname);
+			preparedQuery.setString(3, shift);
+			preparedQuery.setString(4, String.valueOf(id));
+			
+			boolean error = preparedQuery.execute();
 
 			databaseConnection.close();
 			
@@ -134,14 +149,19 @@ public class DatabaseManager {
 	///
 	/// Adds an employee to the database
 	///
-	public boolean AddEmployee(String name, String shift) throws Exception {
+	public boolean AddEmployee(String fname, String lname, String shift) throws Exception {
 		try {  
-			//TODO: MUST UPDATE TO PREPARED STATEMENT TO PREVENT POSSIBLE INJECTION!
-			
 			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
-			Statement dbStatement = databaseConnection.createStatement();
-			boolean error = dbStatement.execute("INSERT INTO employee_data(em_name, em_shift) VALUES(" + name + "," + shift + ")");
 
+			String queryString = "INSERT INTO employee_data(em_firstname, em_lastname, em_shift) VALUES(?, ?, ?)";
+			
+			PreparedStatement preparedQuery = databaseConnection.prepareStatement(queryString);
+			preparedQuery.setString(1, fname);
+			preparedQuery.setString(2, lname);
+			preparedQuery.setString(3, shift);
+			
+			boolean error = preparedQuery.execute();
+			
 			databaseConnection.close();
 			
 			return error;
@@ -158,10 +178,10 @@ public class DatabaseManager {
 	///
 	public boolean UndelAll() throws Exception {
 		try {  
-			//TODO: MUST UPDATE TO PREPARED STATEMENT TO PREVENT POSSIBLE INJECTION!
-			
 			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
+			
 			Statement dbStatement = databaseConnection.createStatement();
+			
 			boolean error = dbStatement.execute("UPDATE employee_data SET em_deleted = 0 WHERE 1");
 
 			databaseConnection.close();
@@ -181,10 +201,10 @@ public class DatabaseManager {
 	///
 	public boolean DelAll() throws Exception {
 		try {  
-			//TODO: MUST UPDATE TO PREPARED STATEMENT TO PREVENT POSSIBLE INJECTION!
-			
 			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
+			
 			Statement dbStatement = databaseConnection.createStatement();
+			
 			boolean error = dbStatement.execute("UPDATE employee_data SET em_deleted = 1 WHERE 1");
 
 			databaseConnection.close();

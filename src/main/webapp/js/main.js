@@ -41,16 +41,12 @@ var EmployeeClient = {
 		
 	},
 	editEmployee: function(id) {
-		
-		alert(id);
     	$.ajax({
     		method: "POST",
     		url: "./api/employee/" + id,
-    		data: {"name": $('#first_name').val() + " - " + $('#last_name').val(), "shift": $('#shift_start').val() + " - " + $('#shift_end').val()},
+    		data: {"fname": $('#first_name').val(), "lname": $('#last_name').val(), "shift": $('#shift_start').val() + " - " + $('#shift_end').val()},
     	}).done(function(msg) {
     		var response = JSON.parse(msg);
-    		
-    		alert(response);
     		
     		console.log("EmployeeClient::editEmployee() response:")
     		console.log(response);
@@ -75,8 +71,8 @@ var EmployeeClient = {
 	addEmployee: function(id) {
     	$.post({
     		method: "PUT",
-    		url: "./api/employee/" + id,
-    		data: JSON.stringify({"name": $('#first_name').val() + " - " + $('#last_name').val(), "shift": $('#shift_start').val() + " - " + $('#shift_end').val()}),
+    		url: "./api/employees/",
+    		data: {"fname": $('#first_name').val(), "lname": $('#last_name').val(), "shift": $('#shift_start').val() + " - " + $('#shift_end').val()},
     	}).done(function(msg) {
     		var response = JSON.parse(msg);
     		
@@ -239,7 +235,7 @@ class Error extends React.Component {
 class AskModal extends React.Component {
 	render() {
 		return(
-			<div id="modal-container" className="modal bottom-sheet">
+			<div id="modal-container" className="modal">
 			    <div className="modal-content">
 			        <h4 id="modal-tital">{this.props.title}</h4>
 			        <p id="modal-message">{this.props.message}</p>
@@ -256,13 +252,13 @@ class AskModal extends React.Component {
 class EditModal extends React.Component {
 	render() {
 		return(
-			<div id="modal-container" className="modal bottom-sheet">
+			<div id="modal-container" className="modal">
 			    <div className="modal-content">
 			        <h4 id="modal-tital">{this.props.title}</h4>
 			        <p id="modal-message">{this.props.message}</p>
 		        	<div className="row">
 			        	<div className="input-field col s6">
-			        		<input placeholder="Placeholder" id="first_name" type="text" className="validate" />
+			        		<input id="first_name" type="text" className="validate" />
 			        		<label for="first_name">First Name</label>
 			        	</div>
 			        	<div className="input-field col s6">
@@ -270,7 +266,7 @@ class EditModal extends React.Component {
 			        		<label for="last_name">Last Name</label>
 			        	</div>
 			        	<div className="input-field col s6">
-			        		<input placeholder="Placeholder" id="shift_start" type="text" className="validate" />
+			        		<input id="shift_start" type="text" className="validate" />
 			        		<label for="shift_start">Shift Start</label>
 			        	</div>
 			        	<div className="input-field col s6">
@@ -411,10 +407,7 @@ var DataStorage = {
 	hasLoaded: false, 
 	notLoadedState: <Error title={"Loading"} message={"Fetching employee list..."} />,
 	
-	lastEmployeeState: 0,
-	
-	lastAction: 0,
-	lastID: 0
+	lastEmployeeState: 0
 }
 
 render(<App />, document.getElementById('employee-target'));
