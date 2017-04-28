@@ -8,6 +8,7 @@ import {render} from 'react-dom';
  */
 var EmployeeClient = {
 	deleteEmployee: function(id) {
+		
     	$.ajax({
     		method: "DELETE",
     		url: "./api/employee/" + id,
@@ -18,9 +19,10 @@ var EmployeeClient = {
     		console.log(response);
 
     		if(typeof response['error'] != "undefined") { 
-    			render(<Error title={"Error"} message={response['error']} />, document.getElementById('employee-target'));
+    			render(<Error title={"Error"} message={response['error'] + " Please retry later."} />, document.getElementById('error-target'));
     		}
     		else {
+    			$("#error-container").remove();
     			render(<App />, document.getElementById('employee-target'));
     		}
     	});
@@ -48,7 +50,7 @@ var DebugClient = {
     		//console.log(response);
 
     		if(typeof response['error'] != "undefined") { 
-    			render(<Error title={"Error"} message={response['error']} />, document.getElementById('employee-target'));
+    			render(<Error title={"Error"} message={response['error']} />, document.getElementById('error-target'));
     		}
     		else {
     			render(<App />, document.getElementById('employee-target'));
@@ -67,8 +69,7 @@ var DebugClient = {
     		//console.log(response);
 
     		if(typeof response['error'] != "undefined") { 
-    			$('#error-modal').modal('open');
-    			$("#error-text").text(response['error']);
+    			render(<Error title={"Error"} message={response['error']} />, document.getElementById('error-target'));
     		}
     		else {
     			render(<App />, document.getElementById('employee-target'));
@@ -151,7 +152,7 @@ class Error extends React.Component {
 		console.log(this.props);
 		
 		return(
-			<div className="row">
+			<div id="error-container" className="row">
 			    <div className="col s12">
 			        <div className="card blue-grey darken-1">
 			            <div className="card-content white-text">
@@ -288,9 +289,9 @@ class App extends React.Component {
  * from jumping them back to the top of the screen.
  */
 var DataStorage = {
-		hasLoaded: false, 
-		lastEmployeeState: 0,
-		notLoadedState: <Error title={"Loading"} message={"Fetching employee list..."} />
+	hasLoaded: false, 
+	lastEmployeeState: 0,
+	notLoadedState: <Error title={"Loading"} message={"Fetching employee list..."} />
 }
 
 render(<App />, document.getElementById('employee-target'));

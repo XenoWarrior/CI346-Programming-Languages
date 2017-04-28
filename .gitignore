@@ -24,3 +24,5 @@ nbdist/
 .nb-gradle/
 node_modules/
 src/main/resources/
+src/main/webapp/js/bundle.js
+*.map
