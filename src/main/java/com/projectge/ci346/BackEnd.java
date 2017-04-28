@@ -2,6 +2,7 @@ package com.projectge.ci346;
 
 import com.projectge.*; // Some errors show up if this is not imported, but it works regardless...
 
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -79,16 +80,14 @@ public class BackEnd {
 		return gson.toJson(finalResults);
 	}
 
-	@RequestMapping(value = "/api/employee/{id}", method = RequestMethod.PUT, produces = "plain/text")
-	public String EditEmployee(@PathVariable("id") int id, @RequestBody() String payload) {
+	@RequestMapping(value = "/api/employee/{id}", method = RequestMethod.POST, produces = "plain/text")
+	public String EditEmployee(@PathVariable("id") int id, @RequestBody() MultiValueMap<String, String> data) {
 		HashMap<String, String> finalResults = new HashMap<String, String>();
 
-		HashMap<String, String> data = new HashMap<String, String>();
-		data = (HashMap<String, String>) gson.fromJson(payload, data.getClass());
-		
 		try {
 			DatabaseManager db = new DatabaseManager();
-			boolean dbResults = db.EditEmployee(id, data['name'], data['shift']);
+			
+			boolean dbResults = db.EditEmployee(id, data.getFirst("name"), data.getFirst("shift"));
 
 			if(!dbResults) {
 				finalResults.put("message", "Actions completed successfully.");

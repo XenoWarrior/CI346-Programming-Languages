@@ -41,12 +41,16 @@ var EmployeeClient = {
 		
 	},
 	editEmployee: function(id) {
-    	$.post({
+		
+		alert(id);
+    	$.ajax({
     		method: "POST",
     		url: "./api/employee/" + id,
-    		data: JSON.stringify({"name": $('#first_name').val() + " - " + $('#last_name').val(), "shift": $('#shift_start').val() + " - " + $('#shift_end').val()}),
+    		data: {"name": $('#first_name').val() + " - " + $('#last_name').val(), "shift": $('#shift_start').val() + " - " + $('#shift_end').val()},
     	}).done(function(msg) {
     		var response = JSON.parse(msg);
+    		
+    		alert(response);
     		
     		console.log("EmployeeClient::editEmployee() response:")
     		console.log(response);
@@ -159,7 +163,7 @@ class Employee extends React.Component {
 				<td className="center-align">
 					<div>
 						<a onClick={ EmployeeClient.deleteEmployeeAsk.bind(this, this.props.employeeObject['id']) } className="space waves-effect waves-light btn">Delete</a>
-						<a onClick={ EmployeeClient.editEmployeeAsk.bind(this) } className="waves-effect waves-light btn">Edit</a>
+						<a onClick={ EmployeeClient.editEmployeeAsk.bind(this, this.props.employeeObject['id']) } className="waves-effect waves-light btn">Edit</a>
 					</div>
 				</td>
 			</tr>
