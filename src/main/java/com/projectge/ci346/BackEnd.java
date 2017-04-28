@@ -84,7 +84,7 @@ public class BackEnd {
 		HashMap<String, String> finalResults = new HashMap<String, String>();
 
 		HashMap<String, String> data = new HashMap<String, String>();
-		data = (Map<String, String>) gson.fromJson(payload, data.getClass());
+		data = (HashMap<String, String>) gson.fromJson(payload, data.getClass());
 		
 		try {
 			DatabaseManager db = new DatabaseManager();
@@ -116,7 +116,7 @@ public class BackEnd {
 				finalResults.put("message", "Actions completed successfully.");
 			}
 			else {
-				finalResults.put("error", "No employee id [" + id + "] found.");
+				finalResults.put("error", "Unable to add employee.");
 			}
 		}
 		catch(Exception e) {

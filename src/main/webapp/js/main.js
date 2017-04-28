@@ -42,9 +42,37 @@ var EmployeeClient = {
 	},
 	editEmployee: function(id) {
     	$.post({
+    		method: "POST",
+    		url: "./api/employee/" + id,
+    		data: JSON.stringify({"name": $('#first_name').val() + " - " + $('#last_name').val(), "shift": $('#shift_start').val() + " - " + $('#shift_end').val()}),
+    	}).done(function(msg) {
+    		var response = JSON.parse(msg);
+    		
+    		console.log("EmployeeClient::editEmployee() response:")
+    		console.log(response);
+
+    		if(typeof response['error'] != "undefined") { 
+    			render(<Error title={"Error"} message={response['error'] + " Please retry later."} />, document.getElementById('error-target'));
+    		}
+    		else {
+    			$("#error-container").remove();
+    			render(<App />, document.getElementById('employee-target'));
+    		}
+    	});
+	},
+	
+	addEmployeeAsk: function(id) {
+		console.log("EmployeeClient::editEmployeeAsk() request new values [" + id + "].");
+		render(<EditModal title={"Edit Employee"} message={"Enter the new values below."} eventListener={EmployeeClient.editEmployee.bind(this, id)} />, document.getElementById('modal-target'));
+		$('.modal').modal();
+		$('#modal-container').modal("open");
+		
+	},
+	addEmployee: function(id) {
+    	$.post({
     		method: "PUT",
     		url: "./api/employee/" + id,
-    		data: JSON.stringify({"name": $('#modal-edit-name').val(), "shift": $('#modal-edit-shift-start').val() + " - " + $('#modal-edit-shift-end').val()}),
+    		data: JSON.stringify({"name": $('#first_name').val() + " - " + $('#last_name').val(), "shift": $('#shift_start').val() + " - " + $('#shift_end').val()}),
     	}).done(function(msg) {
     		var response = JSON.parse(msg);
     		
