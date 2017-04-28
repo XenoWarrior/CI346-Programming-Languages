@@ -7,8 +7,13 @@ import {render} from 'react-dom';
  * Standard object which contains methods that talk with the API after the page has loaded.
  */
 var EmployeeClient = {
+	deleteEmployeeAsk: function(id) {
+		console.log("EmployeeClient::deleteEmployeeAsk() ask to delete [" + id + "].");
+		render(<AskModal title={"Confirm Deletion"} message={"Are you sure you wish to delete this employee record?"} eventListener={EmployeeClient.deleteEmployee.bind(this, id)} />, document.getElementById('modal-target'));
+		$('.modal').modal();
+		$('#modal-container').modal("open");
+	},
 	deleteEmployee: function(id) {
-		
     	$.ajax({
     		method: "DELETE",
     		url: "./api/employee/" + id,
@@ -27,8 +32,33 @@ var EmployeeClient = {
     		}
     	});
 	},
-	editEmployee: function() {
+	
+	editEmployeeAsk: function(id) {
+		console.log("EmployeeClient::editEmployeeAsk() request new values [" + id + "].");
+		render(<EditModal title={"Edit Employee"} message={"Enter the new values below."} eventListener={EmployeeClient.editEmployee.bind(this, id)} />, document.getElementById('modal-target'));
+		$('.modal').modal();
+		$('#modal-container').modal("open");
 		
+	},
+	editEmployee: function(id) {
+    	$.post({
+    		method: "PUT",
+    		url: "./api/employee/" + id,
+    		data: JSON.stringify({"name": $('#modal-edit-name').val(), "shift": $('#modal-edit-shift-start').val() + " - " + $('#modal-edit-shift-end').val()}),
+    	}).done(function(msg) {
+    		var response = JSON.parse(msg);
+    		
+    		console.log("EmployeeClient::editEmployee() response:")
+    		console.log(response);
+
+    		if(typeof response['error'] != "undefined") { 
+    			render(<Error title={"Error"} message={response['error'] + " Please retry later."} />, document.getElementById('error-target'));
+    		}
+    		else {
+    			$("#error-container").remove();
+    			render(<App />, document.getElementById('employee-target'));
+    		}
+    	});
 	}
 }
 
@@ -100,8 +130,8 @@ class Employee extends React.Component {
 				<td>{this.props.employeeObject['shift']}</td>
 				<td className="center-align">
 					<div>
-						<a onClick={ EmployeeClient.deleteEmployee.bind(this, this.props.employeeObject['id']) } className="space waves-effect waves-light btn">Delete</a>
-						<a onClick={ EmployeeClient.editEmployee.bind(this) } className="waves-effect waves-light btn">Edit</a>
+						<a onClick={ EmployeeClient.deleteEmployeeAsk.bind(this, this.props.employeeObject['id']) } className="space waves-effect waves-light btn">Delete</a>
+						<a onClick={ EmployeeClient.editEmployeeAsk.bind(this) } className="waves-effect waves-light btn">Edit</a>
 					</div>
 				</td>
 			</tr>
@@ -119,9 +149,14 @@ class EmployeeList extends React.Component {
 		console.log("EmployeeList::render() employeeList:");
 		console.log(this.props.employeeList);
 		
-		var employeeList = Object.values(this.props.employeeList).map(employeeObject =>
-			<Employee employeeObject = {JSON.parse(employeeObject)}/>
-		);
+		if(Object.keys(this.props.employeeList).length == 0) {
+			<Error title={"Notice"} message={"There were no employees found. You can add new employees using the 'Add' button."} />
+		}
+		else {
+			var employeeList = Object.values(this.props.employeeList).map(employeeObject =>
+				<Employee employeeObject = {JSON.parse(employeeObject)}/>
+			);
+		}
 
 		return(
 			<table>
@@ -165,6 +200,58 @@ class Error extends React.Component {
 			        </div>
 		        </div>
 	        </div>
+		);
+	}
+}
+
+class AskModal extends React.Component {
+	render() {
+		return(
+			<div id="modal-container" className="modal bottom-sheet">
+			    <div className="modal-content">
+			        <h4 id="modal-tital">{this.props.title}</h4>
+			        <p id="modal-message">{this.props.message}</p>
+			    </div>
+			    <div className="modal-footer">
+			        <a href="#!" onClick={this.props.eventListener} className="modal-action modal-close waves-effect waves-green btn-flat">Confirm</a>
+			        <a href="#!" className="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+			    </div>
+			</div>
+		);
+	}
+}
+
+class EditModal extends React.Component {
+	render() {
+		return(
+			<div id="modal-container" className="modal bottom-sheet">
+			    <div className="modal-content">
+			        <h4 id="modal-tital">{this.props.title}</h4>
+			        <p id="modal-message">{this.props.message}</p>
+		        	<div className="row">
+			        	<div className="input-field col s6">
+			        		<input placeholder="Placeholder" id="first_name" type="text" className="validate" />
+			        		<label for="first_name">First Name</label>
+			        	</div>
+			        	<div className="input-field col s6">
+			        		<input id="last_name" type="text" className="validate" />
+			        		<label for="last_name">Last Name</label>
+			        	</div>
+			        	<div className="input-field col s6">
+			        		<input placeholder="Placeholder" id="shift_start" type="text" className="validate" />
+			        		<label for="shift_start">Shift Start</label>
+			        	</div>
+			        	<div className="input-field col s6">
+			        		<input id="shift_end" type="text" className="validate" />
+			        		<label for="shift_end">Shift End</label>
+			        	</div>
+		        	</div>
+			    </div>
+			    <div className="modal-footer">
+			        <a href="#!" onClick={this.props.eventListener} className="modal-action modal-close waves-effect waves-green btn-flat">Confirm</a>
+			        <a href="#!" className="modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+			    </div>
+			</div>
 		);
 	}
 }
@@ -290,8 +377,12 @@ class App extends React.Component {
  */
 var DataStorage = {
 	hasLoaded: false, 
+	notLoadedState: <Error title={"Loading"} message={"Fetching employee list..."} />,
+	
 	lastEmployeeState: 0,
-	notLoadedState: <Error title={"Loading"} message={"Fetching employee list..."} />
+	
+	lastAction: 0,
+	lastID: 0
 }
 
 render(<App />, document.getElementById('employee-target'));
