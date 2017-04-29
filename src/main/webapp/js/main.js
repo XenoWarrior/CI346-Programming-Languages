@@ -24,9 +24,11 @@ var EmployeeClient = {
     		console.log(response);
 
     		if(typeof response['error'] != "undefined") { 
-    			render(<Error title={"Error"} message={response['error'] + " Please retry later."} />, document.getElementById('error-target'));
+    			render(<Error title={"Error"} message={response['error']} />, document.getElementById('error-target'));
     		}
     		else {
+    			Materialize.toast('Deleted successfully.', 4000);
+    			
     			$("#error-container").remove();
     			render(<App />, document.getElementById('employee-target'));
     		}
@@ -42,7 +44,8 @@ var EmployeeClient = {
 		$('#modal-container').modal("open");
 	},
 	editEmployee: function(id) {
-    	$.ajax({
+    	$.post({
+    		// I know this is supposed to be PUT, but Spring is throwing some issue which I can't understand.
     		method: "POST",
     		url: "./api/employee/" + id,
     		data: {"fname": $('#first_name').val(), "lname": $('#last_name').val(), "shift": $('#shift_start').val() + " - " + $('#shift_end').val()},
@@ -56,6 +59,8 @@ var EmployeeClient = {
     			render(<Error title={"Error"} message={response['error'] + " Please retry later."} />, document.getElementById('error-target'));
     		}
     		else {
+    			Materialize.toast('Edited successfully.', 4000);
+    			
     			$("#error-container").remove();
     			render(<App />, document.getElementById('employee-target'));
     		}
@@ -63,33 +68,36 @@ var EmployeeClient = {
     	});
 	},
 	
-	addEmployeeAsk: function(id) {
-		console.log("EmployeeClient::editEmployeeAsk() request new values [" + id + "].");
-		render(<InputModal title={"Edit Employee"} message={"Enter the new values below."} eventListener={EmployeeClient.editEmployee.bind(this, id)} />, document.getElementById('modal-target'));
+	addEmployeeAsk: function() {
+		console.log("EmployeeClient::addEmployeeAsk() request new values.");
+		render(<InputModal title={"Add Employee"} message={"Enter the new values below."} eventListener={EmployeeClient.addEmployee.bind(this)} />, document.getElementById('modal-target'));
 		$('.modal').modal();
 		$('#modal-container').modal("open");
 		
 	},
-	addEmployee: function(id) {
+	addEmployee: function() {
     	$.post({
-    		method: "PUT",
-    		url: "./api/employees/",
+    		method: "POST",
+    		url: "./api/employees",
     		data: {"fname": $('#first_name').val(), "lname": $('#last_name').val(), "shift": $('#shift_start').val() + " - " + $('#shift_end').val()},
     	}).done(function(msg) {
     		var response = JSON.parse(msg);
     		
-    		console.log("EmployeeClient::editEmployee() response:")
+    		console.log("EmployeeClient::addEmployee() response:")
     		console.log(response);
 
     		if(typeof response['error'] != "undefined") { 
     			render(<Error title={"Error"} message={response['error'] + " Please retry later."} />, document.getElementById('error-target'));
     		}
     		else {
+    			Materialize.toast('Added successfully.', 4000);
+    			
     			$("#error-container").remove();
     			render(<App />, document.getElementById('employee-target'));
     		}
+    		
     	});
-	}
+	},
 }
 
 /**
@@ -113,6 +121,7 @@ var DebugClient = {
     			render(<Error title={"Error"} message={response['error']} />, document.getElementById('error-target'));
     		}
     		else {
+    			Materialize.toast('[DEBUG] Task run success.', 4000);
     			render(<App />, document.getElementById('employee-target'));
     		}
     	});
@@ -132,6 +141,7 @@ var DebugClient = {
     			render(<Error title={"Error"} message={response['error']} />, document.getElementById('error-target'));
     		}
     		else {
+    			Materialize.toast('[DEBUG] Task run success.', 4000);
     			render(<App />, document.getElementById('employee-target'));
     		}
     	});
@@ -141,6 +151,20 @@ var DebugClient = {
 	rerenderDocument: function() { 
 		render(<App />, document.getElementById('employee-target'));
 		render(<Debug />, document.getElementById('debug-target'));
+		Materialize.toast('[DEBUG] Task run success.', 4000);
+	}
+}
+
+/**
+ * 2 (React.Component)
+ * 
+ * The React.Component for the add button next to "EmployeeList" 
+ */
+class AddButton extends React.Component {
+	render() {
+		return(
+			<a data-tooltip="Adds a new employee to the list." onClick={EmployeeClient.addEmployeeAsk.bind(this)} className="btn-floating btn-large waves-effect waves-light green tooltipped"><i className="material-icons">add</i></a>
+		);
 	}
 }
 
@@ -160,8 +184,8 @@ class Employee extends React.Component {
 				<td>{this.props.employeeObject['shift']}</td>
 				<td className="center-align">
 					<div>
-						<a onClick={ EmployeeClient.deleteEmployeeAsk.bind(this, this.props.employeeObject['id']) } className="space waves-effect waves-light btn">Delete</a>
-						<a onClick={ EmployeeClient.editEmployeeAsk.bind(this, this.props.employeeObject['id']) } className="waves-effect waves-light btn">Edit</a>
+						<a data-tooltip="Removes the employee from this shift." onClick={ EmployeeClient.deleteEmployeeAsk.bind(this, this.props.employeeObject['id']) } className="space waves-effect waves-light btn tooltipped">Delete</a>
+						<a data-tooltip="Edits the employee on this shift." onClick={ EmployeeClient.editEmployeeAsk.bind(this, this.props.employeeObject['id']) } className="waves-effect waves-light btn tooltipped">Edit</a>
 					</div>
 				</td>
 			</tr>
@@ -180,57 +204,28 @@ class EmployeeList extends React.Component {
 		console.log(this.props.employeeList);
 		
 		if(Object.keys(this.props.employeeList).length == 0) {
-			<Error title={"Notice"} message={"There were no employees found. You can add new employees using the 'Add' button."} />
+			return(<Error title={"Notice"} message={"There were no employees found. You can add new employees using the green 'Add (+)' button."} />);
 		}
 		else {
 			var employeeList = Object.values(this.props.employeeList).map(employeeObject =>
 				<Employee employeeObject = {JSON.parse(employeeObject)}/>
 			);
+			return(
+				<table>
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Name</th>
+							<th>Shift</th>
+							<th className="center-align">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{employeeList}
+					</tbody>
+				</table>
+			);
 		}
-
-		return(
-			<table>
-				<thead>
-					<tr>
-						<th>ID</th>
-						<th>Name</th>
-						<th>Shift</th>
-						<th className="center-align">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{employeeList}
-				</tbody>
-			</table>
-		);
-	}
-}
-
-/**
- * Error (React.Component)
- * 
- * The React.Component which pushes errors to the screen.
- */
-class Error extends React.Component {
-	render() {
-		console.log("Error::render() props:");
-		console.log(this.props);
-		
-		return(
-			<div id="error-container" className="row">
-			    <div className="col s12">
-			        <div className="card blue-grey darken-1">
-			            <div className="card-content white-text">
-			                <span className="card-title">{this.props.title}</span>
-			                <p>{this.props.message}</p>
-			            </div>
-			            <div className="card-action">
-			                <a href="./">Reload</a>
-			            </div>
-			        </div>
-		        </div>
-	        </div>
-		);
 	}
 }
 
@@ -273,19 +268,19 @@ class InputModal extends React.Component {
 		        	<div className="row">
 			        	<div className="input-field col s6">
 			        		<input id="first_name" type="text" className="validate" />
-			        		<label for="first_name">First Name</label>
+			        		<label htmlFor="first_name">First Name</label>
 			        	</div>
 			        	<div className="input-field col s6">
 			        		<input id="last_name" type="text" className="validate" />
-			        		<label for="last_name">Last Name</label>
+			        		<label htmlFor="last_name">Last Name</label>
 			        	</div>
 			        	<div className="input-field col s6">
 			        		<input id="shift_start" type="text" className="validate" />
-			        		<label for="shift_start">Shift Start</label>
+			        		<label htmlFor="shift_start">Shift Start</label>
 			        	</div>
 			        	<div className="input-field col s6">
 			        		<input id="shift_end" type="text" className="validate" />
-			        		<label for="shift_end">Shift End</label>
+			        		<label htmlFor="shift_end">Shift End</label>
 			        	</div>
 		        	</div>
 			    </div>
@@ -319,18 +314,46 @@ class Debug extends React.Component {
 				<tbody>
 					<tr>
 						<td>Undelete All Employees</td>
-						<td className="center-align"><a onClick={DebugClient.debugUndeleteAll.bind(this)} className="waves-effect waves-light btn">Go</a></td>
+						<td className="center-align"><a data-tooltip="Adds all employees back to the list." onClick={DebugClient.debugUndeleteAll.bind(this)} className="waves-effect waves-light btn tooltipped">Go</a></td>
 					</tr>
 					<tr>
 						<td>Delete All Employees</td>
-						<td className="center-align"><a onClick={DebugClient.debugDeleteAll.bind(this)} className="waves-effect waves-light btn">Go</a></td>
+						<td className="center-align"><a data-tooltip="Deletes all employees from the list." onClick={DebugClient.debugDeleteAll.bind(this)} className="waves-effect waves-light btn tooltipped">Go</a></td>
 					</tr>
 					<tr>
 						<td>Rerender Document</td>
-						<td className="center-align"><a onClick={DebugClient.rerenderDocument.bind(this)} className="waves-effect waves-light btn">Go</a></td>
+						<td className="center-align"><a data-tooltip="Updates the React Components." onClick={DebugClient.rerenderDocument.bind(this)} className="waves-effect waves-light btn tooltipped">Go</a></td>
 					</tr>
 				</tbody>
 			</table>
+		);
+	}
+}
+
+/**
+ * Error (React.Component)
+ * 
+ * The React.Component which pushes errors to the screen.
+ */
+class Error extends React.Component {
+	render() {
+		console.log("Error::render() props:");
+		console.log(this.props);
+		
+		return(
+			<div id="error-container" className="row">
+			    <div className="col s12">
+			        <div className="card blue-grey darken-1">
+			            <div className="card-content white-text">
+			                <span className="card-title">{this.props.title}</span>
+			                <p>{this.props.message}</p>
+			            </div>
+			            <div className="card-action">
+			                <a href="./">Reload</a>
+			            </div>
+			        </div>
+		        </div>
+	        </div>
 		);
 	}
 }
@@ -388,6 +411,9 @@ class App extends React.Component {
     			DataStorage['hasLoaded'] = true;
         		DataStorage['lastEmployeeList'] = employeeListComponent;
     			console.log(DataStorage);
+    			
+    			// Render an add button since the connection was successful
+    			render(<AddButton />, document.getElementById('add-target'))
     		}
     	});
     }

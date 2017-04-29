@@ -17,9 +17,17 @@ public class EmployeeData {
 	public int getID() {
 		return this.employeeID;
 	}
-	
+
 	public String getFullName() {
 		return this.employeeFName + " " + this.employeeSName;
+	}
+	
+	public String getFirstName() {
+		return this.employeeFName;
+	}
+	
+	public String getLastName() {
+		return this.employeeSName;
 	}
 
 	public String getShift() {

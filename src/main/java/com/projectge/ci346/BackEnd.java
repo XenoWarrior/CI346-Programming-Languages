@@ -32,7 +32,7 @@ public class BackEnd {
 	 * 
 	 * API Entry point. Used to test server setup and response.
 	 * 
-	 * @return String, response json feed.
+	 * @return String, response JSON feed.
 	 */
 	@RequestMapping(value = "/api", method = RequestMethod.GET, produces = "plain/text")
 	public String GetIndex() {
@@ -67,6 +67,8 @@ public class BackEnd {
 
 					items.put("id", String.valueOf(e.getID()));
 					items.put("fullname", e.getFullName());
+					items.put("fname", e.getFullName());
+					items.put("lname", e.getFullName());
 					items.put("shift", e.getShift());
 					
 					finalResults.put(String.valueOf(finalResults.size()), gson.toJson(items));
@@ -116,6 +118,9 @@ public class BackEnd {
 	}
 
 	/**
+	 * THIS IS SUPPOSED TO BE A PUT REQUEST, BUT I DON'T UNDERSTAND HOW TO GET THIS WORKING.
+	 * POST WORKS PERFECTLY FINE, HOWEVER. (did try a string payload, but still throwing a 406)
+	 * 
 	 * POST /api/employees/{id}
 	 * 
 	 * URLParams: int {id}, the employee id
@@ -153,7 +158,7 @@ public class BackEnd {
 	}
 
 	/**
-	 * PUT /api/employees
+	 * POST /api/employees
 	 * 
 	 * URLParams: none
 	 * 	
@@ -166,12 +171,13 @@ public class BackEnd {
 	 * 
 	 * @return String, response JSON feed.
 	 */
-	@RequestMapping(value = "/api/employees", method = RequestMethod.PUT, produces = "plain/text")
+	@RequestMapping(value = "/api/employees", method = RequestMethod.POST, produces = "plain/text")
 	public String AddEmployee(@RequestBody() MultiValueMap<String, String> data) {
 		HashMap<String, String> finalResults = new HashMap<String, String>();
 		
 		try {
 			DatabaseManager db = new DatabaseManager();
+			
 			boolean dbResults = db.AddEmployee(data.getFirst("fname"), data.getFirst("lname"), data.getFirst("shift"));
 
 			if(!dbResults) {
