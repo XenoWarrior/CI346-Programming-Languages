@@ -1,5 +1,13 @@
 # Programming Languages, Concurrency and Client Server Computing (Assignment 2)
 
+## Assignment
+
+Contains the following requirements:
+* HATEOS API
+* ReactJS Front-end
+* Relational Database
+* Automated Tests (**to an extent, on boot)
+
 ## Setup
 This guide gives instructions on setting up this project on `Windows`.
 
