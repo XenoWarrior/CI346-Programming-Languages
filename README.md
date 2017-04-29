@@ -16,3 +16,16 @@ You can now setup the project using `mvn install` and `npm install -g` (remove `
 
 ## Running
 The project should compile and run by simply running `mvn spring-boot:run`.
+Maven has been configured to automatically run `npm install` and `webpack`.
+
+## Runtime
+When running the project for the first time, I assume you have already configured an SQL database.
+
+Default:
+* username: root
+* password: usbw
+* database: ci346_employees
+* port: 3306
+
+If all these conditions are met, you should be able to click the "Create Table" debug button to automatically insert a table.
+Followed by "Add Test Employees" to populate the database with some employee records.
