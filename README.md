@@ -32,26 +32,26 @@ Followed by "Add Test Employees" to populate the database with some employee rec
 
 ## Copyright
 This project includes the following third-party packages:
-* MIT
-* * [MaterialiseCSS](http://materializecss.com/), MIT
-* * [Babel Core](https://github.com/babel/babel), MIT
-* * [Babel Loader](https://github.com/babel/babel), MIT
-* * [Babel Preset ES2015](https://github.com/babel/babel/tree/master/packages/babel-preset-es2015), MIT
-* * [Babel Preset React](https://github.com/babel/babel/tree/master/packages/babel-preset-react), MIT
-* * [jQuery](https://www.npmjs.com/package/jquery), MIT
-* * [Webpack](https://www.npmjs.com/package/webpack), MIT
+MIT
+* [MaterialiseCSS](http://materializecss.com/), MIT
+* [Babel Core](https://github.com/babel/babel), MIT
+* [Babel Loader](https://github.com/babel/babel), MIT
+* [Babel Preset ES2015](https://github.com/babel/babel/tree/master/packages/babel-preset-es2015), MIT
+* [Babel Preset React](https://github.com/babel/babel/tree/master/packages/babel-preset-react), MIT
+* [jQuery](https://www.npmjs.com/package/jquery), MIT
+* [Webpack](https://www.npmjs.com/package/webpack), MIT
 
-* GNU
-* * [MySQL Connector Java](https://mvnrepository.com/artifact/mysql/mysql-connector-java), GNU
+GNU
+* [MySQL Connector Java](https://mvnrepository.com/artifact/mysql/mysql-connector-java), GNU
 
-* Apache 2.0
-* * [Apache Maven](https://maven.apache.org/), APACHE LICENSE, VERSION 2.0
-* * [Spring Boot](https://github.com/spring-projects/spring-boot), APACHE LICENSE, VERSION 2.0
-* * [Spring Framework](https://github.com/spring-projects/spring-framework), APACHE LICENSE, VERSION 2.0
-* * [Google GSON](https://github.com/google/gson), APACHE LICENSE, VERSION 2.0
+Apache 2.0
+* [Apache Maven](https://maven.apache.org/), APACHE LICENSE, VERSION 2.0
+* [Spring Boot](https://github.com/spring-projects/spring-boot), APACHE LICENSE, VERSION 2.0
+* [Spring Framework](https://github.com/spring-projects/spring-framework), APACHE LICENSE, VERSION 2.0
+* [Google GSON](https://github.com/google/gson), APACHE LICENSE, VERSION 2.0
 
-* * Other
+Other
 * [NodeJS + NPM](https://nodejs.org/), [License](https://github.com/nodejs/node/blob/master/LICENSE)
 
-* BSD
-* * [ReactJS](https://facebook.github.io/react/), [BSD-3-Clause](https://spdx.org/licenses/BSD-3-Clause)
+BSD
+* [ReactJS](https://facebook.github.io/react/), [BSD-3-Clause](https://spdx.org/licenses/BSD-3-Clause)
