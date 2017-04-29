@@ -35,10 +35,11 @@ var EmployeeClient = {
 	
 	editEmployeeAsk: function(id) {
 		console.log("EmployeeClient::editEmployeeAsk() request new values [" + id + "].");
-		render(<EditModal title={"Edit Employee"} message={"Enter the new values below."} eventListener={EmployeeClient.editEmployee.bind(this, id)} />, document.getElementById('modal-target'));
+		
+		render(<InputModal title={"Edit Employee"} message={"Enter the new values below."} eventListener={EmployeeClient.editEmployee.bind(this, id)} />, document.getElementById('modal-target'));
+		
 		$('.modal').modal();
 		$('#modal-container').modal("open");
-		
 	},
 	editEmployee: function(id) {
     	$.ajax({
@@ -58,12 +59,13 @@ var EmployeeClient = {
     			$("#error-container").remove();
     			render(<App />, document.getElementById('employee-target'));
     		}
+    		
     	});
 	},
 	
 	addEmployeeAsk: function(id) {
 		console.log("EmployeeClient::editEmployeeAsk() request new values [" + id + "].");
-		render(<EditModal title={"Edit Employee"} message={"Enter the new values below."} eventListener={EmployeeClient.editEmployee.bind(this, id)} />, document.getElementById('modal-target'));
+		render(<InputModal title={"Edit Employee"} message={"Enter the new values below."} eventListener={EmployeeClient.editEmployee.bind(this, id)} />, document.getElementById('modal-target'));
 		$('.modal').modal();
 		$('#modal-container').modal("open");
 		
@@ -232,6 +234,12 @@ class Error extends React.Component {
 	}
 }
 
+/**
+ * AskModal (React.Component)
+ * 
+ * The React.Component which pushes a modal to get user confirmation.
+ * (Confirm/Cancel action)
+ */
 class AskModal extends React.Component {
 	render() {
 		return(
@@ -249,7 +257,13 @@ class AskModal extends React.Component {
 	}
 }
 
-class EditModal extends React.Component {
+/**
+ * InputModal (React.Component)
+ * 
+ * The React.Component which pushes a modal to get user input.
+ * Primarily used to add/edit employees, but can be extended for other uses.
+ */
+class InputModal extends React.Component {
 	render() {
 		return(
 			<div id="modal-container" className="modal">

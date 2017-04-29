@@ -12,7 +12,10 @@ import java.util.ArrayList;
  * @author Ashley Scott
  * 
  * Handles transactions with a MySQL database.
- * Values are currently hard coded in the constructor.
+ * Login values are currently hard coded in.
+ * 
+ * I was planning on writing a database manager with appropriate execute(), update(), delete() methods, but decided to
+ * go with writing individual "Get/Delte/Edit/Add Employee" methods for ease to make following what is going on easier. 
  *  
  */
 public class DatabaseManager {

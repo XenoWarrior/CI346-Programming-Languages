@@ -14,6 +14,15 @@ import java.util.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+/**
+ * 
+ * @author Ashley Scott
+ * 
+ * The API backend for the employee list web app.
+ * Serves the front-end with all the required data. 
+ *
+ */
+
 @RestController
 public class BackEnd {
 
