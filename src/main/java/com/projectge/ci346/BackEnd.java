@@ -1,18 +1,14 @@
 package com.projectge.ci346;
 
-import com.projectge.*; // Some errors show up if this is not imported, but it works regardless...
-
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * 
@@ -40,8 +36,8 @@ public class BackEnd {
 	 */
 	@RequestMapping(value = "/api", method = RequestMethod.GET, produces = "plain/text")
 	public String GetIndex() {
-		HashMap<String, String> finalResults = HashMap<String, String>();
 
+		HashMap<String, String> finalResults = new HashMap<String, String>();
 		finalResults.put("error", "This is the entry route.");
 		
 		return gson.toJson(finalResults);
