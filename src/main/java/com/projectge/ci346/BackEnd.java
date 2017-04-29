@@ -66,10 +66,10 @@ public class BackEnd {
 					HashMap<String, String> items = new HashMap<String, String>();
 
 					items.put("id", String.valueOf(e.getID()));
-					items.put("fullname", e.getFullName());
-					items.put("fname", e.getFullName());
-					items.put("lname", e.getFullName());
-					items.put("shift", e.getShift());
+					items.put("first_name", e.getFirstName());
+					items.put("last_name", e.getLastName());
+					items.put("shift_start", e.getShiftStart());
+					items.put("shift_end", e.getShiftEnd());
 					
 					finalResults.put(String.valueOf(finalResults.size()), gson.toJson(items));
 				}
@@ -126,9 +126,10 @@ public class BackEnd {
 	 * URLParams: int {id}, the employee id
 	 * 	
 	 * DataParams:
-	 * 	fname: String, new employee first name
-	 *  lname: String, new employee last name
-	 * 	shift: String, new employee shift time
+	 * 	first_name: String, new employee first name
+	 *  last_name: String, new employee last name
+	 * 	shift_start: String, new employee shift time
+	 * 	shift_end: String, new employee shift time
 	 * 
 	 * Edits a specified employee with new values.
 	 * 
@@ -141,7 +142,7 @@ public class BackEnd {
 		try {
 			DatabaseManager db = new DatabaseManager();
 			
-			boolean dbResults = db.EditEmployee(id, data.getFirst("fname"), data.getFirst("lname"), data.getFirst("shift"));
+			boolean dbResults = db.EditEmployee(id, data.getFirst("first_name"), data.getFirst("last_name"), data.getFirst("shift_start"), data.getFirst("shift_end"));
 
 			if(!dbResults) {
 				finalResults.put("message", "Actions completed successfully.");
@@ -163,9 +164,10 @@ public class BackEnd {
 	 * URLParams: none
 	 * 	
 	 * DataParams:
-	 * 	fname: String, new employee first name
-	 *  lname: String, new employee last name
-	 * 	shift: String, new employee shift time
+	 * 	first_name: String, new employee first name
+	 *  last_name: String, new employee last name
+	 * 	shift_start: String, new employee shift time
+	 * 	shift_end: String, new employee shift time
 	 * 
 	 * Adds a new employee to the database.
 	 * 
@@ -177,8 +179,8 @@ public class BackEnd {
 		
 		try {
 			DatabaseManager db = new DatabaseManager();
-			
-			boolean dbResults = db.AddEmployee(data.getFirst("fname"), data.getFirst("lname"), data.getFirst("shift"));
+
+			boolean dbResults = db.AddEmployee(data.getFirst("first_name"), data.getFirst("last_name"), data.getFirst("shift_start"), data.getFirst("shift_end"));
 
 			if(!dbResults) {
 				finalResults.put("message", "Actions completed successfully.");

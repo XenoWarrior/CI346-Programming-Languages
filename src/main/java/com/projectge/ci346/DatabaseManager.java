@@ -33,7 +33,7 @@ public class DatabaseManager {
 			ResultSet dbResults = dbStatement.executeQuery("SELECT * FROM employee_data WHERE 1 LIMIT 1");
 			
 			while(dbResults.next()) {
-				System.out.println(dbResults.getInt(1) + "  " + dbResults.getString(2) + "  " + dbResults.getString(3) + "  " + dbResults.getString(4));  
+				System.out.println(dbResults.getInt(1) + "  " + dbResults.getString(2) + "  " + dbResults.getString(3) + "  " + dbResults.getString(4) + "  " + dbResults.getString(5));  
 			}
 			
 			databaseConnection.close();
@@ -56,7 +56,7 @@ public class DatabaseManager {
 			
 			ArrayList<EmployeeData> finalResults = new ArrayList<EmployeeData>();
 			while(dbResults.next()) {
-				finalResults.add(new EmployeeData(dbResults.getInt(1), dbResults.getString(2), dbResults.getString(3), dbResults.getString(4)));  
+				finalResults.add(new EmployeeData(dbResults.getInt(1), dbResults.getString(2), dbResults.getString(3), dbResults.getString(4), dbResults.getString(5)));  
 			}
 			
 			databaseConnection.close();
@@ -85,7 +85,7 @@ public class DatabaseManager {
 
 			ArrayList<EmployeeData> finalResults = new ArrayList<EmployeeData>();
 			while(dbResults.next()) {
-				finalResults.add(new EmployeeData(dbResults.getInt(1), dbResults.getString(2), dbResults.getString(3), dbResults.getString(4))); 
+				finalResults.add(new EmployeeData(dbResults.getInt(1), dbResults.getString(2), dbResults.getString(3), dbResults.getString(4), dbResults.getString(5))); 
 			}
 			
 			databaseConnection.close();
@@ -125,17 +125,18 @@ public class DatabaseManager {
 	///
 	/// Edits a single employee in the database
 	///
-	public boolean EditEmployee(int id, String fname, String lname, String shift) throws Exception {
+	public boolean EditEmployee(int id, String first_name, String last_name, String shift_start, String shift_end) throws Exception {
 		try {
 			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
 
-			String queryString = "UPDATE employee_data SET em_firstname = ?, em_lastname = ?, em_shift = ? WHERE em_id = ? LIMIT 1";
+			String queryString = "UPDATE employee_data SET em_firstname = ?, em_lastname = ?, em_shiftstart = ?, em_shiftend = ? WHERE em_id = ? LIMIT 1";
 			
 			PreparedStatement preparedQuery = databaseConnection.prepareStatement(queryString);
-			preparedQuery.setString(1, fname);
-			preparedQuery.setString(2, lname);
-			preparedQuery.setString(3, shift);
-			preparedQuery.setString(4, String.valueOf(id));
+			preparedQuery.setString(1, first_name);
+			preparedQuery.setString(2, last_name);
+			preparedQuery.setString(3, shift_start);
+			preparedQuery.setString(4, shift_end);
+			preparedQuery.setString(5, String.valueOf(id));
 			
 			boolean error = preparedQuery.execute();
 
@@ -152,16 +153,17 @@ public class DatabaseManager {
 	///
 	/// Adds an employee to the database
 	///
-	public boolean AddEmployee(String fname, String lname, String shift) throws Exception {
+	public boolean AddEmployee(String first_name, String last_name, String shift_start, String shift_end) throws Exception {
 		try {  
 			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
 
-			String queryString = "INSERT INTO employee_data(em_firstname, em_lastname, em_shift) VALUES(?, ?, ?)";
+			String queryString = "INSERT INTO employee_data(em_firstname, em_lastname, em_shiftstart, em_shiftend) VALUES(?, ?, ?, ?)";
 			
 			PreparedStatement preparedQuery = databaseConnection.prepareStatement(queryString);
-			preparedQuery.setString(1, fname);
-			preparedQuery.setString(2, lname);
-			preparedQuery.setString(3, shift);
+			preparedQuery.setString(1, first_name);
+			preparedQuery.setString(2, last_name);
+			preparedQuery.setString(3, shift_start);
+			preparedQuery.setString(4, shift_end);
 			
 			boolean error = preparedQuery.execute();
 			

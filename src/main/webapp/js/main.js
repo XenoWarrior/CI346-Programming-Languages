@@ -48,7 +48,7 @@ var EmployeeClient = {
     		// I know this is supposed to be PUT, but Spring is throwing some issue which I can't understand.
     		method: "POST",
     		url: "./api/employee/" + id,
-    		data: {"fname": $('#first_name').val(), "lname": $('#last_name').val(), "shift": $('#shift_start').val() + " - " + $('#shift_end').val()},
+    		data: {"first_name": $('#first_name').val(), "last_name": $('#last_name').val(), "shift_start": $('#shift_start').val(), "shift_end": $('#shift_end').val()},
     	}).done(function(msg) {
     		var response = JSON.parse(msg);
     		
@@ -56,7 +56,7 @@ var EmployeeClient = {
     		console.log(response);
 
     		if(typeof response['error'] != "undefined") { 
-    			render(<Error title={"Error"} message={response['error'] + " Please retry later."} />, document.getElementById('error-target'));
+    			render(<Error title={"Error"} message={response['error']} />, document.getElementById('error-target'));
     		}
     		else {
     			Materialize.toast('Edited successfully.', 4000);
@@ -79,7 +79,7 @@ var EmployeeClient = {
     	$.post({
     		method: "POST",
     		url: "./api/employees",
-    		data: {"fname": $('#first_name').val(), "lname": $('#last_name').val(), "shift": $('#shift_start').val() + " - " + $('#shift_end').val()},
+    		data: {"first_name": $('#first_name').val(), "last_name": $('#last_name').val(), "shift_start": $('#shift_start').val(), "shift_end": $('#shift_end').val()},
     	}).done(function(msg) {
     		var response = JSON.parse(msg);
     		
@@ -87,7 +87,7 @@ var EmployeeClient = {
     		console.log(response);
 
     		if(typeof response['error'] != "undefined") { 
-    			render(<Error title={"Error"} message={response['error'] + " Please retry later."} />, document.getElementById('error-target'));
+    			render(<Error title={"Error"} message={response['error']} />, document.getElementById('error-target'));
     		}
     		else {
     			Materialize.toast('Added successfully.', 4000);
@@ -180,12 +180,12 @@ class Employee extends React.Component {
 		return (
 			<tr id={"employee-"+this.props.employeeObject['id']}>
 				<td>{this.props.employeeObject['id']}</td>
-				<td>{this.props.employeeObject['fullname']}</td>
-				<td>{this.props.employeeObject['shift']}</td>
-				<td className="center-align">
+				<td>{this.props.employeeObject['first_name'] + " " + this.props.employeeObject['last_name']}</td>
+				<td>{this.props.employeeObject['shift_start'] + " - " + this.props.employeeObject['shift_end']}</td>
+				<td className="right-align">
 					<div>
-						<a data-tooltip="Removes the employee from this shift." onClick={ EmployeeClient.deleteEmployeeAsk.bind(this, this.props.employeeObject['id']) } className="space waves-effect waves-light btn tooltipped">Delete</a>
-						<a data-tooltip="Edits the employee on this shift." onClick={ EmployeeClient.editEmployeeAsk.bind(this, this.props.employeeObject['id']) } className="waves-effect waves-light btn tooltipped">Edit</a>
+						<a data-tooltip="Removes the employee from this shift." onClick={ EmployeeClient.deleteEmployeeAsk.bind(this, this.props.employeeObject['id'])} className="space waves-effect waves-light btn tooltipped">Delete</a>
+						<a data-tooltip="Edits the employee on this shift." onClick={ EmployeeClient.editEmployeeAsk.bind(this, this.props.employeeObject['id'])} className="waves-effect waves-light btn tooltipped">Edit</a>
 					</div>
 				</td>
 			</tr>
@@ -217,7 +217,7 @@ class EmployeeList extends React.Component {
 							<th>ID</th>
 							<th>Name</th>
 							<th>Shift</th>
-							<th className="center-align">Actions</th>
+							<th className="right-align">Actions</th>
 						</tr>
 					</thead>
 					<tbody>

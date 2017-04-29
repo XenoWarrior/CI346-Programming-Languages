@@ -5,13 +5,15 @@ public class EmployeeData {
 	private int employeeID;
 	private String employeeFName;
 	private String employeeSName;
-	private String employeeShift;
+	private String employeeShiftStart;
+	private String employeeShiftEnd;
 	
-	public EmployeeData(int id, String fname, String sname, String shift) {
+	public EmployeeData(int id, String fname, String sname, String shiftstart, String shiftend) {
 		this.employeeID = id;
 		this.employeeFName = fname;
 		this.employeeSName = sname;
-		this.employeeShift = shift;
+		this.employeeShiftStart = shiftstart;
+		this.employeeShiftEnd = shiftend;
 	}
 	
 	public int getID() {
@@ -20,6 +22,10 @@ public class EmployeeData {
 
 	public String getFullName() {
 		return this.employeeFName + " " + this.employeeSName;
+	}
+
+	public String getFullShift() {
+		return this.employeeShiftStart + " " + this.employeeShiftEnd;
 	}
 	
 	public String getFirstName() {
@@ -30,8 +36,12 @@ public class EmployeeData {
 		return this.employeeSName;
 	}
 
-	public String getShift() {
-		return this.employeeShift;
+	public String getShiftStart() {
+		return this.employeeShiftStart;
+	}
+
+	public String getShiftEnd() {
+		return this.employeeShiftEnd;
 	}
 	
 }
