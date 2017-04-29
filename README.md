@@ -32,6 +32,7 @@ Followed by "Add Test Employees" to populate the database with some employee rec
 
 ## Copyright
 This project includes the following third-party packages:
+
 MIT
 * [MaterialiseCSS](http://materializecss.com/), MIT
 * [Babel Core](https://github.com/babel/babel), MIT
