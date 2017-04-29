@@ -35,13 +35,20 @@ var EmployeeClient = {
     	});
 	},
 	
-	editEmployeeAsk: function(id) {
+	editEmployeeAsk: function(id, fn, ln, ss, se) {
 		console.log("EmployeeClient::editEmployeeAsk() request new values [" + id + "].");
 		
 		render(<InputModal title={"Edit Employee"} message={"Enter the new values below."} eventListener={EmployeeClient.editEmployee.bind(this, id)} />, document.getElementById('modal-target'));
-		
+	    
 		$('.modal').modal();
 		$('#modal-container').modal("open");
+
+		$('#first_name').val(fn);
+		$('#last_name').val(ln);
+		$('#shift_start').val(ss);
+		$('#shift_end').val(se);
+
+	    Materialize.updateTextFields();
 	},
 	editEmployee: function(id) {
     	$.post({
@@ -71,9 +78,16 @@ var EmployeeClient = {
 	addEmployeeAsk: function() {
 		console.log("EmployeeClient::addEmployeeAsk() request new values.");
 		render(<InputModal title={"Add Employee"} message={"Enter the new values below."} eventListener={EmployeeClient.addEmployee.bind(this)} />, document.getElementById('modal-target'));
+				
 		$('.modal').modal();
 		$('#modal-container').modal("open");
 		
+		$('#first_name').val("");
+		$('#last_name').val("");
+		$('#shift_start').val("");
+		$('#shift_end').val("");
+
+	    Materialize.updateTextFields();
 	},
 	addEmployee: function() {
     	$.post({
@@ -147,6 +161,24 @@ var DebugClient = {
     	});
 	},
 	
+	debugTruncateTable: function() {
+    	$.ajax({
+    		method: "DELETE",
+    		url: "./api/debug/truncatetable",
+    	}).done(function(msg) {
+    		var response = JSON.parse(msg);
+    		//console.log(response);
+
+    		if(typeof response['error'] != "undefined") { 
+    			render(<Error title={"Error"} message={response['error']} />, document.getElementById('error-target'));
+    		}
+    		else {
+    			Materialize.toast('[DEBUG] Task run success.', 4000);
+    			render(<App />, document.getElementById('employee-target'));
+    		}
+    	});
+	},
+		
 	// Used to reload the document without refreshing the page.
 	rerenderDocument: function() { 
 		render(<App />, document.getElementById('employee-target'));
@@ -163,7 +195,7 @@ var DebugClient = {
 class AddButton extends React.Component {
 	render() {
 		return(
-			<a data-tooltip="Adds a new employee to the list." onClick={EmployeeClient.addEmployeeAsk.bind(this)} className="btn-floating btn-large waves-effect waves-light green tooltipped"><i className="material-icons">add</i></a>
+			<a data-tooltip="Adds a new employee to the list." onClick={EmployeeClient.addEmployeeAsk.bind(this)} className="btn-floating btn-large waves-effect waves-light light-green tooltipped"><i className="material-icons">add</i></a>
 		);
 	}
 }
@@ -185,7 +217,7 @@ class Employee extends React.Component {
 				<td className="right-align">
 					<div>
 						<a data-tooltip="Removes the employee from this shift." onClick={ EmployeeClient.deleteEmployeeAsk.bind(this, this.props.employeeObject['id'])} className="space waves-effect waves-light btn tooltipped">Delete</a>
-						<a data-tooltip="Edits the employee on this shift." onClick={ EmployeeClient.editEmployeeAsk.bind(this, this.props.employeeObject['id'])} className="waves-effect waves-light btn tooltipped">Edit</a>
+						<a data-tooltip="Edits the employee on this shift." onClick={ EmployeeClient.editEmployeeAsk.bind(this, this.props.employeeObject['id'], this.props.employeeObject['first_name'], this.props.employeeObject['last_name'], this.props.employeeObject['shift_start'], this.props.employeeObject['shift_end'])} className="waves-effect waves-light btn tooltipped">Edit</a>
 					</div>
 				</td>
 			</tr>
@@ -267,20 +299,18 @@ class InputModal extends React.Component {
 			        <p id="modal-message">{this.props.message}</p>
 		        	<div className="row">
 			        	<div className="input-field col s6">
-			        		<input id="first_name" type="text" className="validate" />
+			        		<input id="first_name" type="text" className="validate active"/>
 			        		<label htmlFor="first_name">First Name</label>
 			        	</div>
 			        	<div className="input-field col s6">
-			        		<input id="last_name" type="text" className="validate" />
-			        		<label htmlFor="last_name">Last Name</label>
+			        		<input id="last_name" type="text" className="validate active"/>
+				        		<label htmlFor="last_name">Last Name</label>
 			        	</div>
 			        	<div className="input-field col s6">
-			        		<input id="shift_start" type="text" className="validate" />
-			        		<label htmlFor="shift_start">Shift Start</label>
+			        		<input id="shift_start" type="time" className="validate active"/>
 			        	</div>
 			        	<div className="input-field col s6">
-			        		<input id="shift_end" type="text" className="validate" />
-			        		<label htmlFor="shift_end">Shift End</label>
+			        		<input id="shift_end" type="time" className="validate active"/>
 			        	</div>
 		        	</div>
 			    </div>
@@ -316,9 +346,13 @@ class Debug extends React.Component {
 						<td>Undelete All Employees</td>
 						<td className="center-align"><a data-tooltip="Adds all employees back to the list." onClick={DebugClient.debugUndeleteAll.bind(this)} className="waves-effect waves-light btn tooltipped">Go</a></td>
 					</tr>
-					<tr>
+						<tr>
 						<td>Delete All Employees</td>
 						<td className="center-align"><a data-tooltip="Deletes all employees from the list." onClick={DebugClient.debugDeleteAll.bind(this)} className="waves-effect waves-light btn tooltipped">Go</a></td>
+					</tr>
+						<tr>
+						<td>Truncate Table</td>
+						<td className="center-align"><a data-tooltip="Permanently deletes all employees and resets auto-increment to 0." onClick={DebugClient.debugTruncateTable.bind(this)} className="waves-effect waves-light btn tooltipped">Go</a></td>
 					</tr>
 					<tr>
 						<td>Rerender Document</td>

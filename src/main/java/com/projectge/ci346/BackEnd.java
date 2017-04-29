@@ -239,4 +239,26 @@ public class BackEnd {
 
 		return gson.toJson(finalResults);
 	}
+	
+	@RequestMapping(value = "/api/debug/truncatetable", method = RequestMethod.DELETE, produces = "plain/text")
+	public String debugTruncateTable() {
+		HashMap<String, String> finalResults = new HashMap<String, String>();
+		
+		try {
+			DatabaseManager db = new DatabaseManager();
+			boolean dbResults = db.TruncateTable();
+
+			if(!dbResults) {
+				finalResults.put("message", "Actions completed successfully.");
+			}
+			else {
+				finalResults.put("error", "Unable to run this action.");
+			}
+		}
+		catch(Exception e) {
+			finalResults.put("error", "Exception Caught: " + e.getLocalizedMessage());
+		}
+
+		return gson.toJson(finalResults);
+	}
 }

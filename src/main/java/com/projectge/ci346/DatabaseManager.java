@@ -197,7 +197,6 @@ public class DatabaseManager {
 			// Pass the exception up for handling in the application.
 			throw e;
 		}
-		
 	}
 	
 	///
@@ -220,6 +219,27 @@ public class DatabaseManager {
 			// Pass the exception up for handling in the application.
 			throw e;
 		}
-		
+	}
+	
+	///
+	/// DEBUG METHOD
+	/// Truncates the table
+	///
+	public boolean TruncateTable() throws Exception {
+		try {  
+			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
+			
+			Statement dbStatement = databaseConnection.createStatement();
+			
+			boolean error = dbStatement.execute("TRUNCATE TABLE employee_data");
+
+			databaseConnection.close();
+			
+			return error;
+		}
+		catch(Exception e) {
+			// Pass the exception up for handling in the application.
+			throw e;
+		}
 	}
 }
