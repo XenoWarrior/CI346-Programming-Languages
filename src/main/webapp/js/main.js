@@ -178,6 +178,42 @@ var DebugClient = {
     		}
     	});
 	},
+
+	debugTestEmployees: function() {
+    	$.ajax({
+    		method: "GET",
+    		url: "./api/debug/testemployees",
+    	}).done(function(msg) {
+    		var response = JSON.parse(msg);
+    		//console.log(response);
+
+    		if(typeof response['error'] != "undefined") { 
+    			render(<Error title={"Error"} message={response['error']} />, document.getElementById('error-target'));
+    		}
+    		else {
+    			Materialize.toast('[DEBUG] Task run success.', 4000);
+    			render(<App />, document.getElementById('employee-target'));
+    		}
+    	});
+	},
+	
+	debugCreateTable: function() {
+    	$.ajax({
+    		method: "GET",
+    		url: "./api/debug/configure",
+    	}).done(function(msg) {
+    		var response = JSON.parse(msg);
+    		//console.log(response);
+
+    		if(typeof response['error'] != "undefined") { 
+    			render(<Error title={"Error"} message={response['error']} />, document.getElementById('error-target'));
+    		}
+    		else {
+    			Materialize.toast('[DEBUG] Task run success.', 4000);
+    			render(<App />, document.getElementById('employee-target'));
+    		}
+    	});
+	},
 		
 	// Used to reload the document without refreshing the page.
 	rerenderDocument: function() { 
@@ -343,10 +379,18 @@ class Debug extends React.Component {
 				</thead>
 				<tbody>
 					<tr>
+						<td>Create Table (IF NOT EXISTS)</td>
+						<td className="center-align"><a data-tooltip="Adds all employees back to the list." onClick={DebugClient.debugCreateTable.bind(this)} className="waves-effect waves-light btn tooltipped">Go</a></td>
+					</tr>
+					<tr>
+						<td>Add Test Employees</td>
+						<td className="center-align"><a data-tooltip="Updates the React Components." onClick={DebugClient.debugTestEmployees.bind(this)} className="waves-effect waves-light btn tooltipped">Go</a></td>
+					</tr>
+					<tr>
 						<td>Undelete All Employees</td>
 						<td className="center-align"><a data-tooltip="Adds all employees back to the list." onClick={DebugClient.debugUndeleteAll.bind(this)} className="waves-effect waves-light btn tooltipped">Go</a></td>
 					</tr>
-						<tr>
+					<tr>
 						<td>Delete All Employees</td>
 						<td className="center-align"><a data-tooltip="Deletes all employees from the list." onClick={DebugClient.debugDeleteAll.bind(this)} className="waves-effect waves-light btn tooltipped">Go</a></td>
 					</tr>
@@ -425,11 +469,19 @@ class App extends React.Component {
         		// Checking for error, if this is the case, display an error on the screen.
     			console.log("Response error, pushing error to screen.");
     			
-            	var errorMessageComponent = <Error title={"Error"} message={response['error'] + " Retrying..."} />;
-    			render(errorMessageComponent, document.getElementById('employee-target'));
-
-    			console.log("Attempting reconnection...");
-            	_this.componentDidMount();
+    			if(response['error'] == "Exception Caught: Table 'ci346_employees.employee_data' doesn't exist") {
+        			Materialize.toast('Detected first run, table needs creating.', 4000);
+        			
+    				var errorMessageComponent = <Error title={"Error"} message={"Table does not exist, please create the table."} />;
+    				render(errorMessageComponent, document.getElementById('employee-target'));
+    			}
+    			else {
+    				var errorMessageComponent = <Error title={"Error"} message={response['error'] + " Retrying..."} />;
+    				render(errorMessageComponent, document.getElementById('employee-target'));
+    				
+    				console.log("Attempting reconnection...");
+					_this.componentDidMount();
+    			}
     		}
     		else {
         		// Checking for undefined error, if this is the case, no error actually occurred.

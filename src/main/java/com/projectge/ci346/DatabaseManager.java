@@ -23,17 +23,19 @@ public class DatabaseManager {
 	///
 	/// Opens a connection to the database for the session
 	///
-	public DatabaseManager() throws Exception {
+	public DatabaseManager(boolean first_run) throws Exception {
 		try {  
 			Class.forName("com.mysql.jdbc.Driver");
 
 			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
 			
-			Statement dbStatement = databaseConnection.createStatement();  
-			ResultSet dbResults = dbStatement.executeQuery("SELECT * FROM employee_data WHERE 1 LIMIT 1");
-			
-			while(dbResults.next()) {
-				System.out.println(dbResults.getInt(1) + "  " + dbResults.getString(2) + "  " + dbResults.getString(3) + "  " + dbResults.getString(4) + "  " + dbResults.getString(5));  
+			if(!first_run) {
+				Statement dbStatement = databaseConnection.createStatement();  
+				ResultSet dbResults = dbStatement.executeQuery("SELECT * FROM employee_data WHERE 1 LIMIT 1");
+				
+				while(dbResults.next()) {
+					System.out.println(dbResults.getInt(1) + "  " + dbResults.getString(2) + "  " + dbResults.getString(3) + "  " + dbResults.getString(4) + "  " + dbResults.getString(5));  
+				}
 			}
 			
 			databaseConnection.close();
@@ -232,6 +234,27 @@ public class DatabaseManager {
 			Statement dbStatement = databaseConnection.createStatement();
 			
 			boolean error = dbStatement.execute("TRUNCATE TABLE employee_data");
+
+			databaseConnection.close();
+			
+			return error;
+		}
+		catch(Exception e) {
+			// Pass the exception up for handling in the application.
+			throw e;
+		}
+	}
+	
+	///
+	/// DEBUG METHOD
+	/// Creates the employee table
+	///
+	public boolean CreateEmployeeTable() throws Exception {
+		try {  
+			Connection databaseConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ci346_employees","root","usbw");
+			
+			Statement dbStatement = databaseConnection.createStatement();
+			boolean error = dbStatement.execute("CREATE TABLE IF NOT EXISTS `employee_data` (`em_id` int(11) NOT NULL AUTO_INCREMENT,`em_firstname` text NOT NULL,`em_lastname` text NOT NULL,`em_shiftstart` text NOT NULL,`em_shiftend` text NOT NULL,`em_deleted` int(11) NOT NULL DEFAULT '0',PRIMARY KEY (`em_id`)) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;");
 
 			databaseConnection.close();
 			

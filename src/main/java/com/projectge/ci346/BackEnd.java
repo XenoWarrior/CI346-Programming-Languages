@@ -58,7 +58,7 @@ public class BackEnd {
 		HashMap<String, String> finalResults = new HashMap<String, String>();
 		
 		try {
-			DatabaseManager db = new DatabaseManager();
+			DatabaseManager db = new DatabaseManager(false);
 			
 			ArrayList<EmployeeData> dbResults = db.GetEmployees();
 			if(dbResults != null) {
@@ -100,7 +100,7 @@ public class BackEnd {
 		HashMap<String, String> finalResults = new HashMap<String, String>();
 		
 		try {
-			DatabaseManager db = new DatabaseManager();
+			DatabaseManager db = new DatabaseManager(false);
 			boolean dbResults = db.DelEmployee(id);
 
 			if(!dbResults) {
@@ -140,7 +140,7 @@ public class BackEnd {
 		HashMap<String, String> finalResults = new HashMap<String, String>();
 
 		try {
-			DatabaseManager db = new DatabaseManager();
+			DatabaseManager db = new DatabaseManager(false);
 			
 			boolean dbResults = db.EditEmployee(id, data.getFirst("first_name"), data.getFirst("last_name"), data.getFirst("shift_start"), data.getFirst("shift_end"));
 
@@ -178,7 +178,7 @@ public class BackEnd {
 		HashMap<String, String> finalResults = new HashMap<String, String>();
 		
 		try {
-			DatabaseManager db = new DatabaseManager();
+			DatabaseManager db = new DatabaseManager(false);
 
 			boolean dbResults = db.AddEmployee(data.getFirst("first_name"), data.getFirst("last_name"), data.getFirst("shift_start"), data.getFirst("shift_end"));
 
@@ -196,12 +196,22 @@ public class BackEnd {
 		return gson.toJson(finalResults);
 	}
 
+	/**
+	 * GET /debug/undeleteall
+	 * 
+	 * URLParams: none
+	 * DataParams: none
+	 * 
+	 * Uneletes all employees in the table.
+	 * 
+	 * @return String, response JSON feed.
+	 */
 	@RequestMapping(value = "/api/debug/undeleteall", method = RequestMethod.GET, produces = "plain/text")
 	public String debugUndeleteAll() {
 		HashMap<String, String> finalResults = new HashMap<String, String>();
 		
 		try {
-			DatabaseManager db = new DatabaseManager();
+			DatabaseManager db = new DatabaseManager(false);
 			boolean dbResults = db.UndelAll();
 
 			if(!dbResults) {
@@ -217,13 +227,23 @@ public class BackEnd {
 
 		return gson.toJson(finalResults);
 	}
-	
+
+	/**
+	 * DELETE /debug/deleteall
+	 * 
+	 * URLParams: none
+	 * DataParams: none
+	 * 
+	 * Deletes all employees in the table.
+	 * 
+	 * @return String, response JSON feed.
+	 */
 	@RequestMapping(value = "/api/debug/deleteall", method = RequestMethod.DELETE, produces = "plain/text")
 	public String debugDeleteAll() {
 		HashMap<String, String> finalResults = new HashMap<String, String>();
 		
 		try {
-			DatabaseManager db = new DatabaseManager();
+			DatabaseManager db = new DatabaseManager(false);
 			boolean dbResults = db.DelAll();
 
 			if(!dbResults) {
@@ -239,14 +259,94 @@ public class BackEnd {
 
 		return gson.toJson(finalResults);
 	}
-	
+
+	/**
+	 * DELETE /debug/truncatetable
+	 * 
+	 * URLParams: none
+	 * DataParams: none
+	 * 
+	 * Deletes all data and resets the table A-I to 0.
+	 * 
+	 * @return String, response JSON feed.
+	 */
 	@RequestMapping(value = "/api/debug/truncatetable", method = RequestMethod.DELETE, produces = "plain/text")
 	public String debugTruncateTable() {
 		HashMap<String, String> finalResults = new HashMap<String, String>();
 		
 		try {
-			DatabaseManager db = new DatabaseManager();
+			DatabaseManager db = new DatabaseManager(false);
 			boolean dbResults = db.TruncateTable();
+
+			if(!dbResults) {
+				finalResults.put("message", "Actions completed successfully.");
+			}
+			else {
+				finalResults.put("error", "Unable to run this action.");
+			}
+		}
+		catch(Exception e) {
+			finalResults.put("error", "Exception Caught: " + e.getLocalizedMessage());
+		}
+
+		return gson.toJson(finalResults);
+	}
+
+	/**
+	 * GET /debug/testemployees
+	 * 
+	 * URLParams: none
+	 * DataParams: none
+	 * 
+	 * Populate table with test employees
+	 * 
+	 * @return String, response JSON feed.
+	 */
+	@RequestMapping(value = "/api/debug/testemployees", method = RequestMethod.GET, produces = "plain/text")
+	public String debugTestEmployees() {
+		HashMap<String, String> finalResults = new HashMap<String, String>();
+		
+		try {
+			DatabaseManager db = new DatabaseManager(false);
+			
+			boolean dbResults = db.AddEmployee("A Employee", "One", "10:00", "22:00");
+			dbResults = db.AddEmployee("B Employee", "Two", "10:00", "22:00");
+			dbResults = db.AddEmployee("C Employee", "Three", "10:00", "22:00");
+			dbResults = db.AddEmployee("D Employee", "Four", "10:00", "22:00");
+			dbResults = db.AddEmployee("E Employee", "Five", "10:00", "22:00");
+
+			if(!dbResults) {
+				finalResults.put("message", "Actions completed successfully.");
+			}
+			else {
+				finalResults.put("error", "Unable to run this action.");
+			}
+		}
+		catch(Exception e) {
+			finalResults.put("error", "Exception Caught: " + e.getLocalizedMessage());
+		}
+
+		return gson.toJson(finalResults);
+	}
+
+	/**
+	 * GET /debug/configure
+	 * 
+	 * URLParams: none
+	 * DataParams: none
+	 * 
+	 * Populate table with test employees
+	 * 
+	 * @return String, response JSON feed.
+	 */
+	@RequestMapping(value = "/api/debug/configure", method = RequestMethod.GET, produces = "plain/text")
+	public String debugConfigure() {
+		HashMap<String, String> finalResults = new HashMap<String, String>();
+		
+		try {
+			DatabaseManager db = new DatabaseManager(true);
+			
+			boolean dbResults = db.CreateEmployeeTable();
 
 			if(!dbResults) {
 				finalResults.put("message", "Actions completed successfully.");
